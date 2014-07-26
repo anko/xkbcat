@@ -1,19 +1,17 @@
-// to compile run "gcc -o xspy -lX11 xspy.c"
+// to compile run "gcc -o xkbcat -lX11 xkbcat.c"
 /*
-   xspy
-   Jon A. Maxwell (JAM)
-   jmaxwell@acm.vt.edu
-   Monitors keystrokes even the keyboard is grabbed.
-*/
+   xkbcat
+   Monitors key presses globally across X11.
 
+   A rather simplified version of
+   `xspy` by Jon A. Maxwell (JAM) <jmaxwell@acm.vt.edu>
+   as modified for easier physical key monitoring by Antti Korpi <an@cyan.io>.
+*/
 
 /*
    xspy polls the keyboard to determine the state of all keys on
    the keyboard.  By comparing results it determines which key has
-   been pressed and what modifiers are in use.  In this way it
-   echos to the user all keystrokes typed.
-
-   xspy is freely distributable, provided the source remains intact.
+   been pressed.  In this way it echos to the user all physical keys typed.
 */
 
 #include <X11/Xlib.h>
@@ -51,8 +49,6 @@ int usage() {
           "       Version ",VERSION, ", by JAM");
    exit(0);
 }
-
-
 
 int main(int argc, char *argv[]) {
    char    *hostname=DEFAULT_DISPLAY,
