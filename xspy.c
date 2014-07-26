@@ -32,19 +32,6 @@
 
 #define KEYSYM_STRLEN   64
 
-#define SHIFT_DOWN  1
-#define LOCK_DOWN   5
-#define CONTROL_DOWN    3
-#define ISO3_DOWN    4
-#define MODE_DOWN    5
-
-/* I think it is pretty standard */
-#define SHIFT_INDEX 1  /*index for XKeycodeToKeySym(), for shifted keys*/
-#define MODE_INDEX 2
-#define MODESHIFT_INDEX 3
-#define ISO3_INDEX 4 //TODO geht leider nicht??
-#define ISO3SHIFT_INDEX 4
-
 /* Global variables */
 extern Display *disp;
 extern int PrintUp;
@@ -52,7 +39,7 @@ extern int PrintUp;
 Display *disp;
 int PrintUp  =FALSE;
 
-char *KeyCodeToStr(int code, int down, int mod);
+char *KeyCodeToStr(int code, int down);
 
 int usage() {
    printf("%s\n%s\n%s\n%s\n%s%s%s\n",
@@ -107,7 +94,7 @@ int main(int argc, char *argv[]) {
       for (i=0; i<32*8; i++) {
          if (BIT(keys, i)!=BIT(saved, i)) {
             register char *str;
-            str=(char *)KeyCodeToStr(i, BIT(keys, i), KeyModifiers(keys));
+            str=(char *)KeyCodeToStr(i, BIT(keys, i));
             if (BIT(keys, i)!=0 || PrintUp) printf("%s\n",str);
             fflush(stdout); /* in case user is writing to a pipe */
          }
@@ -122,150 +109,30 @@ int main(int argc, char *argv[]) {
    }
 }
 
-
-/* This part takes the keycode and makes an output string. */
-
 /*
    Have a keycode, Look up keysym for it.
    Convert keysym into its string representation.
-   if string is more than one character try to reduce it to one.
-   if string still is more than one character, put it into the form
-   (+string) or (-string) depending on whether the key is up or down.
-   print out the string.
+   Put it as (+string) or (-string), depending on if it's up or down.
+   Print out the string.
 */
 
-struct conv {char from[20], to[5];} conv_table[] = {
-   /* shift & control replaced with nothing, since they are appearent
-      from the output */
-   {"return",""},    {"escape","^["},    {"delete", "^H"},
-   {"shift",""},       {"control",""},     {"tab","\t"},
-   {"space", " "},     {"exclam", "!"},    {"quotedbl", "\""}, 
-   {"numbersign", "#"},{"dollar", "$"},    {"percent", "%"},
-   {"ampersand", "&"}, {"apostrophe", "'"},{"parenleft", "("}, 
-   {"parenright", ")"},{"asterisk", "*"},  {"plus", "+"},
-   {"comma", ","},     {"minus", "-"},     {"period", "."},    
-   {"slash", "/"},     {"colon", ":"},     {"semicolon", ";"}, 
-   {"less", "<"},      {"equal", "="},     {"greater", ">"},   
-   {"question", "?"},  {"at", "@"},        {"bracketleft", "["},
-   {"backslash", "\\"},{"bracketright", "]"},{"asciicircum", "^"},   
-   {"underscore", "_"},{"grave", "`"},     {"braceleft", "{"}, 
-   {"bar", "|"},       {"braceright", "}"},{"asciitilde", "~"},    
-   {"odiaeresis","ö"},{"udiaeresis","ü"},{"adiaeresis","ä"},{"",""}
-};
-
-int StrToChar(char *data) {
-   int i=0;
-   while (conv_table[i].from[0]!=0 || conv_table[i].to[0]!=0) {
-      if (!strncasecmp(data,conv_table[i].from,
-                       strlen(conv_table[i].from)) ) {
-         strcpy(data,  conv_table[i].to);
-         return TRUE;
-      }
-      i++;
-   }
-   return FALSE;
-}
-
-char *KeyCodeToStr(int code, int down, int mod) {
+char *KeyCodeToStr(int code, int down) {
    static char *str, buf[KEYSYM_STRLEN+1];
-   int index;
    KeySym  keysym;
-   /* get the keysym for the appropriate case */
-	switch (mod) {
-		case SHIFT_DOWN:
-			index=SHIFT_INDEX;
-			break;
-		case ISO3_DOWN:
-			index=ISO3_INDEX;
-			break;
-		case MODE_DOWN:
-			index=MODE_INDEX;
-			break;
-		default:
-			index=0;
-	}
 
-
-   keysym=XKeycodeToKeysym(disp, code, index);
+   keysym=XKeycodeToKeysym(disp, code, 0);
    if (NoSymbol==keysym) return "";
 
    /* convert keysym to a string, copy it to a local area */
    str=XKeysymToString(keysym);
 
-   if (strcmp(str,"ISO_Level3_Shift") == 0) {
-		keysym=XKeycodeToKeysym(disp, code, ISO3_INDEX);
-		str=XKeysymToString(keysym);
-   }
-
    if (NULL==str) return "";
    strncpy(buf, str, KEYSYM_STRLEN); buf[KEYSYM_STRLEN]=0;
 
-   /* try to reduce strings to character equivalents */
-   if (buf[1]!=0 && !StrToChar(buf)) {
-	if (strcmp(buf, "Caps_Lock") == 0) return "";
-      /* still a string, so put it in form (+str) or (-str) */
-      if (down) strcpy(buf, "(+");
-      else      strcpy(buf, "(-");
-      strcat(buf, str);
-      strcat(buf, ")");
-      return buf;
-   }
-   if (buf[0]==0) return "";
-   if (mod==CONTROL_DOWN) {
-      buf[2]=0;
-      buf[1]=toupper(buf[0]);
-      buf[0]='^';
-   }
-   if (mod==LOCK_DOWN) {buf[0]=toupper(buf[0]);}
+   /* still a string, so put it in form (+str) or (-str) */
+   if (down) strcpy(buf, "(+");
+   else      strcpy(buf, "(-");
+   strcat(buf, str);
+   strcat(buf, ")");
    return buf;
 }
-
-
-/* returns which modifier is down, shift/caps or control */
-int KeyModifiers(char *keys) {
-   static int setup=TRUE;
-   static int width;
-   static XModifierKeymap *mmap;
-   int i;
-
-   if (setup) {
-      setup=FALSE;
-      mmap=XGetModifierMapping(disp);
-      width=mmap->max_keypermod;
-   }
-   for (i=0; i<width; i++) {
-      KeyCode code;
-
-      code=mmap->modifiermap[ControlMapIndex*width+i];
-      if (code && 0!=BIT(keys, code)) {return CONTROL_DOWN;}
-
-      code=mmap->modifiermap[ShiftMapIndex*width  +i];
-      if (code && 0!=BIT(keys, code)) {return SHIFT_DOWN;}
-
-      code=mmap->modifiermap[LockMapIndex*width   +i];
-      if (code && 0!=BIT(keys, code)) {return LOCK_DOWN;}
-      
-			code=mmap->modifiermap[Mod3MapIndex*width   +i];
-      if (code && 0!=BIT(keys, code)) {return ISO3_DOWN;}
-      
-			code=mmap->modifiermap[Mod5MapIndex*width   +i];
-      if (code && 0!=BIT(keys, code)) {return MODE_DOWN;}
-   }
-   return 0;
-}
-
-
-/* if usleep is missing
-
-include <sys/types.h>
-include <sys/time.h>
-
-void usleep(x) {
-   struct timeval  time;
-
-   time.tv_sec= x/1000000;
-   time.tv_usec=x%1000000;
-   select(0, NULL, NULL, NULL, &time);
-}
-
-*/
