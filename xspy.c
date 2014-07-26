@@ -22,6 +22,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define VERSION "1.0c"
 #define DEFAULT_DISPLAY ":0"
@@ -118,9 +119,7 @@ int main(int argc, char *argv[]) {
 
 char *KeyCodeToStr(int code, int down) {
    static char *str, buf[KEYSYM_STRLEN+1];
-   KeySym  keysym;
-
-   keysym=XKeycodeToKeysym(disp, code, 0);
+   KeySym keysym = XKeycodeToKeysym(disp, code, 0);
    if (NoSymbol==keysym) return "";
 
    /* convert keysym to a string, copy it to a local area */
