@@ -130,9 +130,8 @@ char *KeyCodeToStr(int code, int down) {
    strncpy(buf, str, KEYSYM_STRLEN); buf[KEYSYM_STRLEN]=0;
 
    /* still a string, so put it in form (+str) or (-str) */
-   if (down) strcpy(buf, "(+");
-   else      strcpy(buf, "(-");
+   if (down) strcpy(buf, "+ ");
+   else      strcpy(buf, "- ");
    strcat(buf, str);
-   strcat(buf, ")");
    return buf;
 }
