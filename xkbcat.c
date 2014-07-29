@@ -24,13 +24,13 @@
 
 #define DEFAULT_DISPLAY ":0"
 #define DEFAULT_DELAY   10000
-#define BIT(c, x)   ( c[x/8]&(1<<(x%8)) )
+#define BIT(c, x)   ( c[x/8]& (1<<(x%8)) )
 #define TRUE    1
 #define FALSE   0
 
-#define KEYSYM_STRLEN   64
+#define KEYSYM_STRLEN 64
 
-/* Global variables */
+/* Globals */
 Display *disp;
 int printKeyUps = FALSE;
 
@@ -46,48 +46,48 @@ int usage() {
 }
 
 int main(int argc, char *argv[]) {
-    char    *hostname=DEFAULT_DISPLAY,
+    char    *hostname = DEFAULT_DISPLAY,
             *char_ptr,
-            buf1[32],   buf2[32],
+            buf1[32], buf2[32],
             *keys,
             *saved;
-    int i,  delay=DEFAULT_DELAY;
+    int i,  delay = DEFAULT_DELAY;
 
     /* get args */
     for (i=1; i<argc; i++) {
         if (!strcmp(argv[i], "-help")) usage();
         else if (!strcmp(argv[i], "-display")) {
             i++;
-            hostname=argv[i];
+            hostname = argv[i];
         }
         else if (!strcmp(argv[i], "-delay")) {
             i++;
-            delay=atoi(argv[i]);
+            delay = atoi(argv[i]);
         }
         else if (!strcmp(argv[i], "-up")) { printKeyUps = TRUE; }
         else usage();
     }
 
     /* setup Xwindows */
-    disp=XOpenDisplay(hostname);
-    if (NULL==disp) {
+    disp = XOpenDisplay(hostname);
+    if (NULL == disp) {
         fprintf(stderr, "Cannot open X display: %s\n", hostname);
         exit(1);
     }
     XSynchronize(disp, TRUE);
 
     /* setup buffers */
-    saved=buf1; keys=buf2;
+    saved = buf1; keys=buf2;
     XQueryKeymap(disp, saved);
 
     while (1) {
         /* find changed keys */
         XQueryKeymap(disp, keys);
         for (i=0; i<32*8; i++) {
-            if (BIT(keys, i)!=BIT(saved, i)) {
+            if (BIT(keys, i) != BIT(saved, i)) {
                 register char *str;
-                str=(char *)KeyCodeToStr(i, BIT(keys, i));
-                if (BIT(keys, i)!=0 || printKeyUps) printf("%s\n",str);
+                str = (char *)KeyCodeToStr(i, BIT(keys, i));
+                if (BIT(keys, i) != 0 || printKeyUps) printf("%s\n",str);
                 fflush(stdout); /* in case user is writing to a pipe */
             }
         }
@@ -111,13 +111,13 @@ int main(int argc, char *argv[]) {
 char *KeyCodeToStr(int code, int down) {
     static char *str, buf[KEYSYM_STRLEN+1];
     KeySym keysym = XKeycodeToKeysym(disp, code, 0);
-    if (NoSymbol==keysym) return "";
+    if (NoSymbol == keysym) return "";
 
     /* convert keysym to a string, copy it to a local area */
-    str=XKeysymToString(keysym);
+    str = XKeysymToString(keysym);
 
-    if (NULL==str) return "";
-    strncpy(buf, str, KEYSYM_STRLEN); buf[KEYSYM_STRLEN]=0;
+    if (NULL == str) return "";
+    strncpy(buf, str, KEYSYM_STRLEN); buf[KEYSYM_STRLEN] = 0;
 
     /* still a string, so put it in form (+str) or (-str) */
     if (down) strcpy(buf, "+ ");
