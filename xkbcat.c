@@ -17,8 +17,6 @@ static inline bool keyState(KbBuffer b, int key) {
     return b[key/8] & (1<<(key%8));
 }
 
-void printKeyPress(Display * disp, int code, bool down, bool printKeyUps);
-
 int printUsage() {
     printf("\
 USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up]\n\
@@ -29,13 +27,15 @@ USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up]\n\
     exit(0);
 }
 
+void printKeyPress(Display * disp, int code, bool down, bool printKeyUps);
+
 int main(int argc, char * argv[]) {
 
     const char * hostname    = DEFAULT_DISPLAY;
     int          delay       = DEFAULT_DELAY;
     bool         printKeyUps = DEFAULT_PRINT_UP;
 
-    // Get args
+    // Get arguments
     for (int i = 1; i < argc; i++) {
         if      (!strcmp(argv[i], "-help"))     printUsage();
         else if (!strcmp(argv[i], "-display"))  hostname    = argv[++i];
@@ -44,7 +44,7 @@ int main(int argc, char * argv[]) {
         else printUsage();
     }
 
-    // Setup Xwindows
+    // Set up X
     Display * disp = XOpenDisplay(hostname);
     if (NULL == disp) {
         fprintf(stderr, "Cannot open X display: %s\n", hostname);
@@ -58,6 +58,7 @@ int main(int argc, char * argv[]) {
              * keys    = &keyBuffer2;
     XQueryKeymap(disp, *oldKeys); // Initial fetch
 
+    // Timespec for time to sleep for
     struct timespec sleepTime = { .tv_nsec = delay };
 
     while (1) { // Forever
@@ -82,8 +83,7 @@ int main(int argc, char * argv[]) {
 }
 
 // Since `XKeysymToString` returns a string of unknown length that shouldn't be
-// modified, it makes more sense to just `printf` the thing in-place without
-// copying it anywhere. It's not needed anywhere else anyway.
+// modified, so it makes more sense to just `printf` it in-place.
 void printKeyPress(Display * disp, int code, bool down, bool printKeyUps) {
 
     KeySym s = XkbKeycodeToKeysym(disp, code, 0, 0); if (NoSymbol == s) return;
