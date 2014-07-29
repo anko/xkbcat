@@ -20,10 +20,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-
-const int TRUE = 1;
-const int FALSE = 0;
+#include <stdbool.h>
 
 char *DEFAULT_DISPLAY = ":0";
 const int DEFAULT_DELAY = 10000;
@@ -32,7 +29,7 @@ const int KEYSYM_STRLEN = 64;
 
 /* Globals */
 Display *disp;
-int printKeyUps = FALSE;
+int printKeyUps = false;
 
 char *KeyCodeToStr(int code, int down);
 
@@ -65,7 +62,7 @@ int main(int argc, char *argv[]) {
             i++;
             delay = atoi(argv[i]);
         }
-        else if (!strcmp(argv[i], "-up")) { printKeyUps = TRUE; }
+        else if (!strcmp(argv[i], "-up")) { printKeyUps = true; }
         else usage();
     }
 
@@ -75,7 +72,7 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Cannot open X display: %s\n", hostname);
         exit(1);
     }
-    XSynchronize(disp, TRUE);
+    XSynchronize(disp, true);
 
     /* setup buffers */
     saved = buf1; keys=buf2;
