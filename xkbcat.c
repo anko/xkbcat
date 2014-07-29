@@ -14,7 +14,7 @@ const bool   DEFAULT_PRINT_UP = false;
 
 typedef char KbBuffer[32];
 static inline bool keyState(KbBuffer b, int key) {
-    return ( b[key/8] & (1<<(key%8)) );
+    return b[key/8] & (1<<(key%8));
 }
 
 void printKeyPress(Display * disp, int code, bool down, bool printKeyUps);
