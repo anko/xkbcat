@@ -32,7 +32,7 @@ const int KEYSYM_STRLEN = 64;
 Display *disp;
 int printKeyUps = false;
 
-char *KeyCodeToStr(int code, int down);
+char *keyPressToString(int code, bool down);
 
 int usage() {
     printf("\
@@ -86,8 +86,7 @@ int main(int argc, char *argv[]) {
         XQueryKeymap(disp, keys);
         for (int i = 0; i < 32*8; i++) {
             if (BIT(keys, i) != BIT(saved, i)) {
-                register char *str;
-                str = (char *)KeyCodeToStr(i, BIT(keys, i));
+                register char *str = keyPressToString(i, BIT(keys, i));
                 if (BIT(keys, i) != 0 || printKeyUps) printf("%s\n",str);
                 fflush(stdout); /* in case user is writing to a pipe */
             }
@@ -109,7 +108,7 @@ int main(int argc, char *argv[]) {
    Print out the string.
    */
 
-char *KeyCodeToStr(int code, int down) {
+char *keyPressToString(int code, bool down) {
     static char *str, buf[KEYSYM_STRLEN + 1];
     KeySym keysym = XkbKeycodeToKeysym(disp, code, 0, 0);
     if (NoSymbol == keysym) return "";
