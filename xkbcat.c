@@ -32,7 +32,7 @@
 
 /* Global variables */
 Display *disp;
-int PrintUp = FALSE;
+int printKeyUps = FALSE;
 
 char *KeyCodeToStr(int code, int down);
 
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
          i++;
          delay=atoi(argv[i]);
       }
-      else if (!strcmp(argv[i], "-up"))   {PrintUp  =TRUE;}
+      else if (!strcmp(argv[i], "-up"))   {printKeyUps  =TRUE;}
       else usage();
    }
 
@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
          if (BIT(keys, i)!=BIT(saved, i)) {
             register char *str;
             str=(char *)KeyCodeToStr(i, BIT(keys, i));
-            if (BIT(keys, i)!=0 || PrintUp) printf("%s\n",str);
+            if (BIT(keys, i)!=0 || printKeyUps) printf("%s\n",str);
             fflush(stdout); /* in case user is writing to a pipe */
          }
       }
