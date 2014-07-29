@@ -25,7 +25,7 @@ static inline bool keyState(KbBuffer c, int key) {
 }
 const int KEYSYM_STRLEN = 64;
 
-char *keyPressToString(Display *disp, int code, bool down);
+char * keyPressToString(Display * disp, int code, bool down);
 
 int printUsage() {
     printf("\
@@ -37,7 +37,7 @@ USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up]\n\
     exit(0);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char * argv[]) {
 
     char *  hostname    = DEFAULT_DISPLAY;
     int     delay       = DEFAULT_DELAY;
@@ -46,14 +46,14 @@ int main(int argc, char *argv[]) {
     // Get args
     for (int i = 1; i < argc; i++) {
         if      (!strcmp(argv[i], "-help"))     printUsage();
-        else if (!strcmp(argv[i], "-display"))  hostname = argv[++i];
-        else if (!strcmp(argv[i], "-delay"))    delay    = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "-display"))  hostname    = argv[++i];
+        else if (!strcmp(argv[i], "-delay"))    delay       = atoi(argv[++i]);
         else if (!strcmp(argv[i], "-up"))       printKeyUps = true;
         else printUsage();
     }
 
     // Setup Xwindows
-    Display *disp = XOpenDisplay(hostname);
+    Display * disp = XOpenDisplay(hostname);
     if (NULL == disp) {
         fprintf(stderr, "Cannot open X display: %s\n", hostname);
         exit(1);
@@ -62,29 +62,29 @@ int main(int argc, char *argv[]) {
 
     // Setup buffers
     KbBuffer keyBuffer1, keyBuffer2;
-    KbBuffer *oldKeys = &keyBuffer1,
-             *keys    = &keyBuffer2;
-    XQueryKeymap(disp, *oldKeys); // Initial get
+    KbBuffer * oldKeys = &keyBuffer1,
+             * keys    = &keyBuffer2;
+    XQueryKeymap(disp, * oldKeys); // Initial get
 
     struct timespec sleepTime = { .tv_nsec = delay };
 
     while (1) { // Forever
         // Get changed keys
-        XQueryKeymap(disp, *keys);
+        XQueryKeymap(disp, * keys);
 
-        for (int i = 0; i < sizeof(KbBuffer)*8; i++) {
+        for (int i = 0; i < sizeof(KbBuffer) * 8; i++) {
             bool stateBefore = keyState(*oldKeys, i),
                  stateNow    = keyState(*keys, i);
             if ( stateNow != stateBefore        // Changed?
-                 && (stateNow || printKeyUps) ) // Print?
+                 && (stateNow || printKeyUps) ) // Should print?
             {
-                printf("%s\n",keyPressToString(disp, i, stateNow));
+                printf("%s\n", keyPressToString(disp, i, stateNow));
                 fflush(stdout); // Ensure pipe is updated
             }
         }
 
         { // Swap buffers
-            KbBuffer *temp = oldKeys;
+            KbBuffer * temp = oldKeys;
             oldKeys = keys;
             keys = temp;
         }
@@ -100,8 +100,8 @@ int main(int argc, char *argv[]) {
    Print out the string.
    */
 
-char *keyPressToString(Display *disp, int code, bool down) {
-    static char *str, buf[KEYSYM_STRLEN + 1];
+char * keyPressToString(Display * disp, int code, bool down) {
+    static char * str, buf[KEYSYM_STRLEN + 1];
     KeySym keysym = XkbKeycodeToKeysym(disp, code, 0, 0);
     if (NoSymbol == keysym) return "";
 
