@@ -78,10 +78,7 @@ int main(int argc, char *argv[]) {
     saved = buf1; keys=buf2;
     XQueryKeymap(disp, saved);
 
-    struct timespec sleepTime = {
-        .tv_sec = 0,
-        .tv_nsec = delay
-    };
+    struct timespec sleepTime = { .tv_nsec = delay };
 
     while (1) {
         /* find changed keys */
