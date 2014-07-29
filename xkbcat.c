@@ -1,9 +1,4 @@
-/*
-   xkbcat
-   ------
-
-   Monitors key presses globally across X11.
-   */
+// xkbcat: Logs X11 keypresses, globally.
 
 #include <X11/Xlib.h>
 #include <X11/X.h>
