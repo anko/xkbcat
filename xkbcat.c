@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <time.h>
 
 char *DEFAULT_DISPLAY = ":0";
 const int DEFAULT_DELAY = 10000;
@@ -50,10 +51,10 @@ int main(int argc, char *argv[]) {
             buf1[32], buf2[32],
             *keys,
             *saved;
-    int i, delay = DEFAULT_DELAY;
+    int delay = DEFAULT_DELAY;
 
     /* get args */
-    for (i=1; i<argc; i++) {
+    for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "-help")) usage();
         else if (!strcmp(argv[i], "-display")) {
             i++;
@@ -79,10 +80,15 @@ int main(int argc, char *argv[]) {
     saved = buf1; keys=buf2;
     XQueryKeymap(disp, saved);
 
+    struct timespec sleepTime = {
+        .tv_sec = 0,
+        .tv_nsec = delay * 1000
+    };
+
     while (1) {
         /* find changed keys */
         XQueryKeymap(disp, keys);
-        for (i=0; i<32*8; i++) {
+        for (int i = 0; i < 32*8; i++) {
             if (BIT(keys, i) != BIT(saved, i)) {
                 register char *str;
                 str = (char *)KeyCodeToStr(i, BIT(keys, i));
@@ -96,7 +102,7 @@ int main(int argc, char *argv[]) {
         saved = keys;
         keys = char_ptr;
 
-        usleep(delay);
+        nanosleep(&sleepTime, NULL);
     }
 }
 
