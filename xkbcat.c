@@ -41,7 +41,7 @@ int main(int argc, char * argv[]) {
         else if (!strcmp(argv[i], "-display"))  hostname    = argv[++i];
         else if (!strcmp(argv[i], "-delay"))    delay       = atoi(argv[++i]);
         else if (!strcmp(argv[i], "-up"))       printKeyUps = true;
-        else printUsage();
+        else { printf("Unexpected argument `%s`\n", argv[i]); printUsage(); }
     }
 
     // Set up X
