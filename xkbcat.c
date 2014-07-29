@@ -19,7 +19,7 @@ static inline bool keyState(KbBuffer c, int key) {
     return ( c[key/8] & (1<<(key%8)) );
 }
 
-char * keyPressToString(Display * disp, int code, bool down);
+void printKeyPress(Display * disp, int code, bool down, bool printKeyUps);
 
 int printUsage() {
     printf("\
@@ -71,10 +71,7 @@ int main(int argc, char * argv[]) {
                  stateNow    = keyState(*keys, i);
             if ( stateNow != stateBefore        // Changed?
                  && (stateNow || printKeyUps) ) // Should print?
-            {
-                printf("%s\n", keyPressToString(disp, i, stateNow));
-                fflush(stdout); // Ensure pipe is updated
-            }
+                printKeyPress(disp, i, stateNow, printKeyUps);
         }
 
         { // Swap buffers
@@ -87,28 +84,19 @@ int main(int argc, char * argv[]) {
     }
 }
 
-/*
-   Have a keycode, Look up keysym for it.
-   Convert keysym into its string representation.
-   Put it as (+string) or (-string), depending on if it's up or down.
-   Print out the string.
-   */
+// Since `XKeysymToString` returns a string of unknown length that shouldn't be
+// modified, it makes more sense to just `printf` the thing in-place without
+// copying it anywhere. It's not needed anywhere else anyway.
+void printKeyPress(Display * disp, int code, bool down, bool printKeyUps) {
 
-char * keyPressToString(Display * disp, int code, bool down) {
-    const int KEYSYM_STRLEN = 64;
-    static char * str, buf[KEYSYM_STRLEN + 1];
-    KeySym keysym = XkbKeycodeToKeysym(disp, code, 0, 0);
-    if (NoSymbol == keysym) return "";
+    KeySym s = XkbKeycodeToKeysym(disp, code, 0, 0); if (NoSymbol == s) return;
+    char * str = XKeysymToString(s);                 if (NULL == str) return;
 
-    // Convert keysym to a string, copy it to a local area
-    str = XKeysymToString(keysym);
+    if (printKeyUps)
+        printf("%s %s\n",
+                (down ? "+" : "-"),
+                str);
+    else
+        printf("%s\n", str);
 
-    if (NULL == str) return "";
-    strncpy(buf, str, KEYSYM_STRLEN); buf[KEYSYM_STRLEN] = 0;
-
-    // Still a string, so put it in form (+str) or (-str)
-    if (down) strcpy(buf, "+ ");
-    else      strcpy(buf, "- ");
-    strcat(buf, str);
-    return buf;
 }
