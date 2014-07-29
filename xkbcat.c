@@ -35,9 +35,6 @@ USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up]\n\
 }
 
 int main(int argc, char *argv[]) {
-    char    buf1[32], buf2[32],
-            *keys,
-            *saved;
 
     char *  hostname    = DEFAULT_DISPLAY;
     int     delay       = DEFAULT_DELAY;
@@ -61,7 +58,9 @@ int main(int argc, char *argv[]) {
     XSynchronize(disp, true);
 
     // Setup buffers
-    saved = buf1; keys=buf2;
+    char keyBuffer1[32], keyBuffer2[32];
+    char *saved = keyBuffer1,
+         *keys  = keyBuffer2;
     XQueryKeymap(disp, saved);
 
     struct timespec sleepTime = { .tv_nsec = delay };
