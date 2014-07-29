@@ -19,7 +19,10 @@ char *     DEFAULT_DISPLAY  = ":0";
 const int  DEFAULT_DELAY    = 10000000;
 const bool DEFAULT_PRINT_UP = false;
 
-static inline int BIT(char *c, int x) { return ( c[x/8]& (1<<(x%8)) ); }
+typedef char KbBuffer[32];
+static inline bool keyState(KbBuffer c, int key) {
+    return ( c[key/8] & (1<<(key%8)) );
+}
 const int KEYSYM_STRLEN = 64;
 
 char *keyPressToString(Display *disp, int code, bool down);
@@ -58,27 +61,31 @@ int main(int argc, char *argv[]) {
     XSynchronize(disp, true);
 
     // Setup buffers
-    char keyBuffer1[32], keyBuffer2[32];
-    char *saved = keyBuffer1,
-         *keys  = keyBuffer2;
-    XQueryKeymap(disp, saved);
+    KbBuffer keyBuffer1, keyBuffer2;
+    KbBuffer *oldKeys = &keyBuffer1,
+             *keys    = &keyBuffer2;
+    XQueryKeymap(disp, *oldKeys); // Initial get
 
     struct timespec sleepTime = { .tv_nsec = delay };
 
-    while (1) {
-        // find changed keys
-        XQueryKeymap(disp, keys);
-        for (int i = 0; i < 32*8; i++) {
-            if (BIT(keys, i) != BIT(saved, i)) {
-                register char *str = keyPressToString(disp, i, BIT(keys, i));
-                if (BIT(keys, i) != 0 || printKeyUps) printf("%s\n",str);
-                fflush(stdout); // In case user is writing to a pipe
+    while (1) { // Forever
+        // Get changed keys
+        XQueryKeymap(disp, *keys);
+
+        for (int i = 0; i < sizeof(KbBuffer)*8; i++) {
+            bool stateBefore = keyState(*oldKeys, i),
+                 stateNow    = keyState(*keys, i);
+            if ( stateNow != stateBefore        // Changed?
+                 && (stateNow || printKeyUps) ) // Print?
+            {
+                printf("%s\n",keyPressToString(disp, i, stateNow));
+                fflush(stdout); // Ensure pipe is updated
             }
         }
 
         { // Swap buffers
-            char * temp = saved;
-            saved = keys;
+            KbBuffer *temp = oldKeys;
+            oldKeys = keys;
             keys = temp;
         }
 
