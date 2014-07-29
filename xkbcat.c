@@ -1,16 +1,8 @@
 /*
    xkbcat
+   ------
+
    Monitors key presses globally across X11.
-
-   A rather simplified version of
-   `xspy` by Jon A. Maxwell (JAM) <jmaxwell@acm.vt.edu>
-   as modified for easier physical key monitoring by Antti Korpi <an@cyan.io>.
-   */
-
-/*
-   xspy polls the keyboard to determine the state of all keys on
-   the keyboard.  By comparing results it determines which key has
-   been pressed.  In this way it echos to the user all physical keys typed.
    */
 
 #include <X11/Xlib.h>
