@@ -45,16 +45,10 @@ int main(int argc, char *argv[]) {
 
     // Get args
     for (int i = 1; i < argc; i++) {
-        if (!strcmp(argv[i], "-help")) printUsage();
-        else if (!strcmp(argv[i], "-display")) {
-            i++;
-            hostname = argv[i];
-        }
-        else if (!strcmp(argv[i], "-delay")) {
-            i++;
-            delay = atoi(argv[i]);
-        }
-        else if (!strcmp(argv[i], "-up")) { printKeyUps = true; }
+        if      (!strcmp(argv[i], "-help"))     printUsage();
+        else if (!strcmp(argv[i], "-display"))  hostname = argv[++i];
+        else if (!strcmp(argv[i], "-delay"))    delay    = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "-up"))       printKeyUps = true;
         else printUsage();
     }
 
