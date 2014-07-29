@@ -13,8 +13,8 @@ const int  DEFAULT_DELAY    = 10000000;
 const bool DEFAULT_PRINT_UP = false;
 
 typedef char KbBuffer[32];
-static inline bool keyState(KbBuffer c, int key) {
-    return ( c[key/8] & (1<<(key%8)) );
+static inline bool keyState(KbBuffer b, int key) {
+    return ( b[key/8] & (1<<(key%8)) );
 }
 
 void printKeyPress(Display * disp, int code, bool down, bool printKeyUps);
@@ -52,17 +52,16 @@ int main(int argc, char * argv[]) {
     }
     XSynchronize(disp, true);
 
-    // Setup buffers
+    // Set up buffers
     KbBuffer keyBuffer1, keyBuffer2;
     KbBuffer * oldKeys = &keyBuffer1,
              * keys    = &keyBuffer2;
-    XQueryKeymap(disp, * oldKeys); // Initial get
+    XQueryKeymap(disp, *oldKeys); // Initial fetch
 
     struct timespec sleepTime = { .tv_nsec = delay };
 
     while (1) { // Forever
-        // Get changed keys
-        XQueryKeymap(disp, * keys);
+        XQueryKeymap(disp, *keys); // Fetch changed keys
 
         for (int i = 0; i < sizeof(KbBuffer) * 8; i++) {
             bool stateBefore = keyState(*oldKeys, i),
@@ -88,12 +87,10 @@ int main(int argc, char * argv[]) {
 void printKeyPress(Display * disp, int code, bool down, bool printKeyUps) {
 
     KeySym s = XkbKeycodeToKeysym(disp, code, 0, 0); if (NoSymbol == s) return;
-    char * str = XKeysymToString(s);                 if (NULL == str) return;
+    char * str = XKeysymToString(s);                 if (NULL == str)   return;
 
     if (printKeyUps)
-        printf("%s %s\n",
-                (down ? "+" : "-"),
-                str);
+        printf("%s %s\n", (down ? "+" : "-"), str);
     else
         printf("%s\n", str);
 
