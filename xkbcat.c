@@ -22,7 +22,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define VERSION "1.0c"
 #define DEFAULT_DISPLAY ":0"
 #define DEFAULT_DELAY   10000
 #define BIT(c, x)   ( c[x/8]&(1<<(x%8)) )
@@ -41,12 +40,11 @@ int PrintUp  =FALSE;
 char *KeyCodeToStr(int code, int down);
 
 int usage() {
-   printf("%s\n%s\n%s\n%s\n%s%s%s\n",
-          "USAGE: xspy -display <display> -delay <usecs> -up",
-          "       Options: display, specifies an X display.",
-          "           delay, determines the polling frequency (.1 sec is 100000 usecs)",
-          "           up, gives up transitions for some keys.",
-          "       Version ",VERSION, ", by JAM");
+   printf("%s\n%s\n%s\n%s\n",
+          "USAGE: xspy [-display <display>] [-delay <usecs>] [-up]",
+          "    display  X display to target",
+          "    delay    polling frequency (.1 sec is 100000 usecs)",
+          "    up       also prints on key-ups");
    exit(0);
 }
 
