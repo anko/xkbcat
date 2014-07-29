@@ -15,6 +15,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/X.h>
+#include <X11/XKBlib.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -110,7 +111,7 @@ int main(int argc, char *argv[]) {
 
 char *KeyCodeToStr(int code, int down) {
     static char *str, buf[KEYSYM_STRLEN + 1];
-    KeySym keysym = XKeycodeToKeysym(disp, code, 0);
+    KeySym keysym = XkbKeycodeToKeysym(disp, code, 0, 0);
     if (NoSymbol == keysym) return "";
 
     /* convert keysym to a string, copy it to a local area */
