@@ -24,7 +24,7 @@ const int KEYSYM_STRLEN = 64;
 
 char *keyPressToString(Display *disp, int code, bool down);
 
-int usage() {
+int printUsage() {
     printf("\
 USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up]\n\
     display  target X display                   (default %s)\n\
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 
     // Get args
     for (int i = 1; i < argc; i++) {
-        if (!strcmp(argv[i], "-help")) usage();
+        if (!strcmp(argv[i], "-help")) printUsage();
         else if (!strcmp(argv[i], "-display")) {
             i++;
             hostname = argv[i];
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
             delay = atoi(argv[i]);
         }
         else if (!strcmp(argv[i], "-up")) { printKeyUps = true; }
-        else usage();
+        else printUsage();
     }
 
     // Setup Xwindows
