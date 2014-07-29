@@ -36,7 +36,6 @@ USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up]\n\
 
 int main(int argc, char *argv[]) {
     char    *hostname = DEFAULT_DISPLAY,
-            *char_ptr,
             buf1[32], buf2[32],
             *keys,
             *saved;
@@ -77,10 +76,11 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        // Swap buffers
-        char_ptr = saved;
-        saved = keys;
-        keys = char_ptr;
+        { // Swap buffers
+            char * temp = saved;
+            saved = keys;
+            keys = temp;
+        }
 
         nanosleep(&sleepTime, NULL);
     }
