@@ -35,12 +35,13 @@ USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up]\n\
 }
 
 int main(int argc, char *argv[]) {
-    char    *hostname = DEFAULT_DISPLAY,
-            buf1[32], buf2[32],
+    char    buf1[32], buf2[32],
             *keys,
             *saved;
-    int delay = DEFAULT_DELAY;
-    bool printKeyUps = DEFAULT_PRINT_UP;
+
+    char *  hostname    = DEFAULT_DISPLAY;
+    int     delay       = DEFAULT_DELAY;
+    bool    printKeyUps = DEFAULT_PRINT_UP;
 
     // Get args
     for (int i = 1; i < argc; i++) {
