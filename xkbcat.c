@@ -37,11 +37,12 @@ int printKeyUps = FALSE;
 char *KeyCodeToStr(int code, int down);
 
 int usage() {
-    printf("%s\n%s\n%s\n%s\n",
-            "USAGE: xkbcat [-display <display>] [-delay <usec>] [-up]",
-            "    display  target X display",
-            "    delay    polling frequency (microseconds)",
-            "    up       also print key-ups");
+    printf("\
+USAGE: xkbcat [-display <display>] [-delay <usec>] [-up]\n\
+    display  target X display                   (default %s)\n\
+    delay    polling frequency; microseconds    (default %d)\n\
+    up       also print key-ups                 (default %s)\n",
+        DEFAULT_DISPLAY, DEFAULT_DELAY, (printKeyUps ? "yes" : "no") );
     exit(0);
 }
 
