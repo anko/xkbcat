@@ -15,16 +15,14 @@
 #include <stdbool.h>
 #include <time.h>
 
-char *    DEFAULT_DISPLAY = ":0";
-const int DEFAULT_DELAY   = 10000000;
+char *     DEFAULT_DISPLAY  = ":0";
+const int  DEFAULT_DELAY    = 10000000;
+const bool DEFAULT_PRINT_UP = false;
+
 static inline int BIT(char *c, int x) { return ( c[x/8]& (1<<(x%8)) ); }
 const int KEYSYM_STRLEN = 64;
 
-// Globals
-Display *disp;
-int printKeyUps = false;
-
-char *keyPressToString(int code, bool down);
+char *keyPressToString(Display *disp, int code, bool down);
 
 int usage() {
     printf("\
@@ -32,7 +30,7 @@ USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up]\n\
     display  target X display                   (default %s)\n\
     delay    polling frequency; nanoseconds     (default %d)\n\
     up       also print key-ups                 (default %s)\n",
-        DEFAULT_DISPLAY, DEFAULT_DELAY, (printKeyUps ? "yes" : "no") );
+        DEFAULT_DISPLAY, DEFAULT_DELAY, (DEFAULT_PRINT_UP ? "yes" : "no") );
     exit(0);
 }
 
@@ -43,6 +41,7 @@ int main(int argc, char *argv[]) {
             *keys,
             *saved;
     int delay = DEFAULT_DELAY;
+    bool printKeyUps = DEFAULT_PRINT_UP;
 
     // Get args
     for (int i = 1; i < argc; i++) {
@@ -60,7 +59,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Setup Xwindows
-    disp = XOpenDisplay(hostname);
+    Display *disp = XOpenDisplay(hostname);
     if (NULL == disp) {
         fprintf(stderr, "Cannot open X display: %s\n", hostname);
         exit(1);
@@ -78,7 +77,7 @@ int main(int argc, char *argv[]) {
         XQueryKeymap(disp, keys);
         for (int i = 0; i < 32*8; i++) {
             if (BIT(keys, i) != BIT(saved, i)) {
-                register char *str = keyPressToString(i, BIT(keys, i));
+                register char *str = keyPressToString(disp, i, BIT(keys, i));
                 if (BIT(keys, i) != 0 || printKeyUps) printf("%s\n",str);
                 fflush(stdout); // In case user is writing to a pipe
             }
@@ -100,7 +99,7 @@ int main(int argc, char *argv[]) {
    Print out the string.
    */
 
-char *keyPressToString(int code, bool down) {
+char *keyPressToString(Display *disp, int code, bool down) {
     static char *str, buf[KEYSYM_STRLEN + 1];
     KeySym keysym = XkbKeycodeToKeysym(disp, code, 0, 0);
     if (NoSymbol == keysym) return "";
