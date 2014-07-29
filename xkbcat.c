@@ -92,6 +92,5 @@ void printKeyPress(Display * disp, int code, bool down, bool printKeyUps) {
     if (printKeyUps)
         printf("%s %s\n", (down ? "+" : "-"), str);
     else
-        printf("%s\n", str);
-
+        puts(str);
 }
