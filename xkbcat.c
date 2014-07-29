@@ -23,7 +23,7 @@
 #include <time.h>
 
 char *DEFAULT_DISPLAY = ":0";
-const int DEFAULT_DELAY = 10000;
+const int DEFAULT_DELAY = 10000000;
 static inline int BIT(char *c, int x) {
     return ( c[x/8]& (1<<(x%8)) );
 }
@@ -37,9 +37,9 @@ char *KeyCodeToStr(int code, int down);
 
 int usage() {
     printf("\
-USAGE: xkbcat [-display <display>] [-delay <usec>] [-up]\n\
+USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up]\n\
     display  target X display                   (default %s)\n\
-    delay    polling frequency; microseconds    (default %d)\n\
+    delay    polling frequency; nanoseconds     (default %d)\n\
     up       also print key-ups                 (default %s)\n",
         DEFAULT_DISPLAY, DEFAULT_DELAY, (printKeyUps ? "yes" : "no") );
     exit(0);
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 
     struct timespec sleepTime = {
         .tv_sec = 0,
-        .tv_nsec = delay * 1000
+        .tv_nsec = delay
     };
 
     while (1) {
