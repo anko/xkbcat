@@ -1,4 +1,3 @@
-// To compile: `gcc -o xkbcat -lX11 xkbcat.c`
 /*
    xkbcat
    Monitors key presses globally across X11.
