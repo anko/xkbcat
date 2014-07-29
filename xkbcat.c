@@ -38,9 +38,9 @@ char *KeyCodeToStr(int code, int down);
 
 int usage() {
     printf("%s\n%s\n%s\n%s\n",
-            "USAGE: xspy [-display <display>] [-delay <usecs>] [-up]",
+            "USAGE: xkbcat [-display <display>] [-delay <usec>] [-up]",
             "    display  X display to target",
-            "    delay    polling frequency (.1 sec is 100000 usecs)",
+            "    delay    polling frequency (microseconds)",
             "    up       also prints on key-ups");
     exit(0);
 }
