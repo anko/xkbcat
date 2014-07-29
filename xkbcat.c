@@ -22,13 +22,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define DEFAULT_DISPLAY ":0"
-#define DEFAULT_DELAY   10000
-#define BIT(c, x)   ( c[x/8]& (1<<(x%8)) )
-#define TRUE    1
-#define FALSE   0
+const int TRUE = 1;
+const int FALSE = 0;
 
-#define KEYSYM_STRLEN 64
+char *DEFAULT_DISPLAY = ":0";
+const int DEFAULT_DELAY = 10000;
+#define BIT(c, x)   ( c[x/8]& (1<<(x%8)) )
+const int KEYSYM_STRLEN = 64;
 
 /* Globals */
 Display *disp;
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
             buf1[32], buf2[32],
             *keys,
             *saved;
-    int i,  delay = DEFAULT_DELAY;
+    int i, delay = DEFAULT_DELAY;
 
     /* get args */
     for (i=1; i<argc; i++) {
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
    */
 
 char *KeyCodeToStr(int code, int down) {
-    static char *str, buf[KEYSYM_STRLEN+1];
+    static char *str, buf[KEYSYM_STRLEN + 1];
     KeySym keysym = XKeycodeToKeysym(disp, code, 0);
     if (NoSymbol == keysym) return "";
 
