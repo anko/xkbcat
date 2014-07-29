@@ -23,7 +23,9 @@
 
 char *DEFAULT_DISPLAY = ":0";
 const int DEFAULT_DELAY = 10000;
-#define BIT(c, x)   ( c[x/8]& (1<<(x%8)) )
+static inline int BIT(char *c, int x) {
+    return ( c[x/8]& (1<<(x%8)) );
+}
 const int KEYSYM_STRLEN = 64;
 
 /* Globals */
