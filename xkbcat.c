@@ -23,7 +23,6 @@ typedef char KbBuffer[32];
 static inline bool keyState(KbBuffer c, int key) {
     return ( c[key/8] & (1<<(key%8)) );
 }
-const int KEYSYM_STRLEN = 64;
 
 char * keyPressToString(Display * disp, int code, bool down);
 
@@ -101,6 +100,7 @@ int main(int argc, char * argv[]) {
    */
 
 char * keyPressToString(Display * disp, int code, bool down) {
+    const int KEYSYM_STRLEN = 64;
     static char * str, buf[KEYSYM_STRLEN + 1];
     KeySym keysym = XkbKeycodeToKeysym(disp, code, 0, 0);
     if (NoSymbol == keysym) return "";
