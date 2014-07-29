@@ -31,11 +31,8 @@
 #define KEYSYM_STRLEN   64
 
 /* Global variables */
-extern Display *disp;
-extern int PrintUp;
-
 Display *disp;
-int PrintUp  =FALSE;
+int PrintUp = FALSE;
 
 char *KeyCodeToStr(int code, int down);
 
