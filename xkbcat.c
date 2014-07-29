@@ -8,9 +8,9 @@
 #include <stdbool.h>
 #include <time.h>
 
-char *     DEFAULT_DISPLAY  = ":0";
-const int  DEFAULT_DELAY    = 10000000;
-const bool DEFAULT_PRINT_UP = false;
+const char * DEFAULT_DISPLAY  = ":0";
+const int    DEFAULT_DELAY    = 10000000;
+const bool   DEFAULT_PRINT_UP = false;
 
 typedef char KbBuffer[32];
 static inline bool keyState(KbBuffer b, int key) {
@@ -31,9 +31,9 @@ USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up]\n\
 
 int main(int argc, char * argv[]) {
 
-    char *  hostname    = DEFAULT_DISPLAY;
-    int     delay       = DEFAULT_DELAY;
-    bool    printKeyUps = DEFAULT_PRINT_UP;
+    const char * hostname    = DEFAULT_DISPLAY;
+    int          delay       = DEFAULT_DELAY;
+    bool         printKeyUps = DEFAULT_PRINT_UP;
 
     // Get args
     for (int i = 1; i < argc; i++) {
