@@ -4,6 +4,7 @@ X11 keylogger with a simple output format: One key event per line on `stdout`.
 
 ![KEYBOARDCAT; though the name is actually referring to the UNIX `cat`
 program](https://cloud.githubusercontent.com/assets/5231746/3756616/3a7135dc-1830-11e4-86b3-4a8e8089205b.gif)
+<br /><sup>[Chi] definitely gets it.</sup>
 
 Great as a data source for keyboard heatmaps, layout comparisons or
 screencasting applications.
@@ -65,3 +66,4 @@ what was actually typed, so it's easier to read what's happening.
 [1]: http://www.freshports.org/security/xspy/
 [2]: http://code.google.com/p/logkeys/
 [3]: http://opensource.org/licenses/ISC
+[Chi]: http://en.wikipedia.org/wiki/Chi's_Sweet_Home
