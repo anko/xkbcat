@@ -47,7 +47,8 @@ Flags you can pass (all optional):
  - `-display <display>`: set target X display (default `:0`)
  - `-delay <nanosec>`: delay between polls to the keyboard (default `10000000`;
    that's 100ms)
- - `-up`: also print key-ups (default: don't)
+ - `-up`: also prepend key-ups (default: don't)
+ - `-time`: also append epoch timestamps (default: don't)
  - `-help`: print usage hints and exit
 
 Then just type as you would usually. Interrupt signal (`C-c`) to end.
