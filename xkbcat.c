@@ -8,9 +8,10 @@
 #include <stdbool.h>
 #include <time.h>
 
-const char * DEFAULT_DISPLAY  = ":0";
-const int    DEFAULT_DELAY    = 10000000;
-const bool   DEFAULT_PRINT_UP = false;
+const char * DEFAULT_DISPLAY    = ":0";
+const int    DEFAULT_DELAY      = 10000000;
+const bool   DEFAULT_PRINT_UP   = false;
+const bool   DEFAULT_PRINT_TIME = false;
 
 typedef char KbBuffer[32];
 static inline bool keyState(KbBuffer b, int key) {
@@ -22,18 +23,22 @@ int printUsage() {
 USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up]\n\
     display  target X display                   (default %s)\n\
     delay    polling frequency; nanoseconds     (default %d)\n\
-    up       also print key-ups                 (default %s)\n",
-        DEFAULT_DISPLAY, DEFAULT_DELAY, (DEFAULT_PRINT_UP ? "yes" : "no") );
+    up       also print key-ups                 (default %s)\n\
+    time     also print timestamps              (default %s)\n",
+        DEFAULT_DISPLAY, DEFAULT_DELAY,
+        (DEFAULT_PRINT_UP   ? "yes" : "no"),
+        (DEFAULT_PRINT_TIME ? "yes" : "no") );
     exit(0);
 }
 
-void printKeyPress(Display * disp, int code, bool down, bool printKeyUps);
+void printKeyPress(Display * disp, int code, bool down, bool printKeyUps, long time, bool printTimes);
 
 int main(int argc, char * argv[]) {
 
     const char * hostname    = DEFAULT_DISPLAY;
     int          delay       = DEFAULT_DELAY;
     bool         printKeyUps = DEFAULT_PRINT_UP;
+    bool         printTimes  = DEFAULT_PRINT_TIME;
 
     // Get arguments
     for (int i = 1; i < argc; i++) {
@@ -41,6 +46,7 @@ int main(int argc, char * argv[]) {
         else if (!strcmp(argv[i], "-display"))  hostname    = argv[++i];
         else if (!strcmp(argv[i], "-delay"))    delay       = atoi(argv[++i]);
         else if (!strcmp(argv[i], "-up"))       printKeyUps = true;
+        else if (!strcmp(argv[i], "-time"))     printTimes  = true;
         else { printf("Unexpected argument `%s`\n", argv[i]); printUsage(); }
     }
 
@@ -63,13 +69,15 @@ int main(int argc, char * argv[]) {
 
     while (1) { // Forever
         XQueryKeymap(disp, *keys); // Fetch changed keys
+        long timestamp = 0;
+        if (printTimes) timestamp = (long)time(NULL);
 
         for (int i = 0; i < sizeof(KbBuffer) * 8; i++) {
             bool stateBefore = keyState(*oldKeys, i),
                  stateNow    = keyState(*keys, i);
             if ( stateNow != stateBefore        // Changed?
                  && (stateNow || printKeyUps) ) // Should print?
-                printKeyPress(disp, i, stateNow, printKeyUps);
+                printKeyPress(disp, i, stateNow, printKeyUps, timestamp, printTimes);
         }
 
         { // Swap buffers
@@ -84,13 +92,13 @@ int main(int argc, char * argv[]) {
 
 // Since `XKeysymToString` returns a string of unknown length that shouldn't be
 // modified, so it makes more sense to just `printf` it in-place.
-void printKeyPress(Display * disp, int code, bool down, bool printKeyUps) {
+void printKeyPress(Display * disp, int code, bool down, bool printKeyUps, long timestamp, bool printTimes) {
 
     KeySym s = XkbKeycodeToKeysym(disp, code, 0, 0); if (NoSymbol == s) return;
     char * str = XKeysymToString(s);                 if (NULL == str)   return;
 
-    if (printKeyUps)
-        printf("%s %s\n", (down ? "+" : "-"), str);
-    else
-        puts(str);
+    if (printKeyUps) printf("%s ", (down ? "+" : "-"));
+    printf("%s", str);
+    if (printTimes)  printf(" %ld", timestamp);
+    printf("\n");
 }
