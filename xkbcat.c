@@ -31,7 +31,18 @@ USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up] [-time]\n\
     exit(0);
 }
 
-void printKeyPress(Display * disp, int code, bool down, bool printKeyUps, long time, bool printTimes);
+// Since `XKeysymToString` returns a string of unknown length that shouldn't be
+// modified, so it makes more sense to just `printf` it in-place.
+void printKeyPress(Display * disp, int code, bool down, bool printKeyUps, long timestamp, bool printTimes) {
+
+    KeySym s = XkbKeycodeToKeysym(disp, code, 0, 0); if (NoSymbol == s) return;
+    char * str = XKeysymToString(s);                 if (NULL == str)   return;
+
+    if (printKeyUps) printf("%s ", (down ? "+" : "-"));
+    printf("%s", str);
+    if (printTimes)  printf(" %ld", timestamp);
+    printf("\n");
+}
 
 int main(int argc, char * argv[]) {
 
@@ -88,17 +99,4 @@ int main(int argc, char * argv[]) {
 
         nanosleep(&sleepTime, NULL);
     }
-}
-
-// Since `XKeysymToString` returns a string of unknown length that shouldn't be
-// modified, so it makes more sense to just `printf` it in-place.
-void printKeyPress(Display * disp, int code, bool down, bool printKeyUps, long timestamp, bool printTimes) {
-
-    KeySym s = XkbKeycodeToKeysym(disp, code, 0, 0); if (NoSymbol == s) return;
-    char * str = XKeysymToString(s);                 if (NULL == str)   return;
-
-    if (printKeyUps) printf("%s ", (down ? "+" : "-"));
-    printf("%s", str);
-    if (printTimes)  printf(" %ld", timestamp);
-    printf("\n");
 }
