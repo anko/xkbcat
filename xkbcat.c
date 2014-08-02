@@ -20,7 +20,7 @@ static inline bool keyState(KbBuffer b, int key) {
 
 int printUsage() {
     printf("\
-USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up]\n\
+USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up] [-time]\n\
     display  target X display                   (default %s)\n\
     delay    polling frequency; nanoseconds     (default %d)\n\
     up       also print key-ups                 (default %s)\n\
