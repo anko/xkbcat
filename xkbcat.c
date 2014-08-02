@@ -14,8 +14,12 @@ const bool   DEFAULT_PRINT_UP   = false;
 const bool   DEFAULT_PRINT_TIME = false;
 
 typedef char KbBuffer[32];
+
 static inline bool keyState(KbBuffer b, int key) {
+     // Fetch the `key`-th bit from the buffer.
     return b[key/8] & (1<<(key%8));
+    // This is because XQueryKeymap just writes a bit per key into the buffer.
+    // Assuming 8-bit chars here, of course.
 }
 
 int printUsage() {
