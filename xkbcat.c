@@ -35,19 +35,6 @@ USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up] [-time]\n\
     exit(0);
 }
 
-// Since `XKeysymToString` returns a string of unknown length that shouldn't be
-// modified, so it makes more sense to just `printf` it in-place.
-void printKeyPress(Display * disp, int code, bool down, bool printKeyUps, long timestamp, bool printTimes) {
-
-    KeySym s = XkbKeycodeToKeysym(disp, code, 0, 0); if (NoSymbol == s) return;
-    char * str = XKeysymToString(s);                 if (NULL == str)   return;
-
-    if (printKeyUps) printf("%s ", (down ? "+" : "-"));
-    printf("%s", str);
-    if (printTimes)  printf(" %ld", timestamp);
-    printf("\n");
-}
-
 int main(int argc, char * argv[]) {
 
     const char * hostname    = DEFAULT_DISPLAY;
@@ -87,12 +74,23 @@ int main(int argc, char * argv[]) {
         long timestamp = 0;
         if (printTimes) timestamp = (long)time(NULL);
 
-        for (int i = 0; i < sizeof(KbBuffer) * 8; i++) {
-            bool stateBefore = keyState(*oldKeys, i),
-                 stateNow    = keyState(*keys, i);
-            if ( stateNow != stateBefore        // Changed?
-                 && (stateNow || printKeyUps) ) // Should print?
-                printKeyPress(disp, i, stateNow, printKeyUps, timestamp, printTimes);
+        for (int keyCode = 0; keyCode < sizeof(KbBuffer) * 8; keyCode++) {
+            bool stateBefore = keyState(*oldKeys, keyCode),
+                 stateNow    = keyState(*keys, keyCode);
+            if ( stateNow != stateBefore          // Changed?
+                 && (stateNow || printKeyUps) ) { // Should print?
+
+                // Ask X what it calls that key
+                KeySym s = XkbKeycodeToKeysym(disp, keyCode, 0, 0);
+                if (NoSymbol == s) continue;
+                char * str = XKeysymToString(s);
+                if (NULL == str)   continue;
+
+                if (printKeyUps) printf("%s ", (stateNow ? "+" : "-"));
+                printf("%s", str);
+                if (printTimes)  printf(" %ld", timestamp);
+                printf("\n");
+            }
         }
 
         { // Swap buffers
