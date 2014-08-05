@@ -92,6 +92,9 @@ int main(int argc, char * argv[]) {
                 printf("\n");
             }
         }
+        // Make sure the data is sent right away if it's being written to a
+        // pipe.
+        fflush(stdout);
 
         { // Swap buffers
             KbBuffer * temp = oldKeys;
