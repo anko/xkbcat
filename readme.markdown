@@ -58,13 +58,18 @@ If you want to add timestamps to each line for logging purposes, I recommend
 piping to the [moreutils package][3]'s `ts`.  [These answers][4] feature
 various other tools good for the purpose.
 
+## Versioning
+
+The git-tagged version numbers follow [semver][5].
+
 ## License
 
-[ISC][5].
+[ISC][6].
 
 
 [1]: http://www.freshports.org/security/xspy/
 [2]: http://code.google.com/p/logkeys/
 [3]: http://joeyh.name/code/moreutils/
 [4]: http://stackoverflow.com/questions/21564/is-there-a-unix-utility-to-prepend-timestamps-to-lines-of-text
-[5]: http://opensource.org/licenses/ISC
+[5]: http://semver.org/
+[6]: http://opensource.org/licenses/ISC
