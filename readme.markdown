@@ -44,7 +44,6 @@ Flags you can pass (all optional):
  - `-delay <nanosec>`: delay between polls to the keyboard (default `10000000`;
    that's 100ms)
  - `-up`: also prepend key-ups (default: don't)
- - `-time`: also append epoch timestamps (default: don't)
  - `-help`: print usage hints and exit
 
 Then just type as you would usually. Interrupt signal (`C-c`) to end.
@@ -55,12 +54,17 @@ If you like spying on people (ethically, of course), [`xspy`][1] or
 [`logkeys`][2] might be better for you. They use the modifier keys to infer
 what was actually typed, so it's easier to read what's happening.
 
+If you want to add timestamps to each line for logging purposes, I recommend
+piping to the [moreutils package][3]'s `ts`.  [These answers][4] feature
+various other tools good for the purpose.
+
 ## License
 
-[ISC][3].
+[ISC][5].
 
 
 [1]: http://www.freshports.org/security/xspy/
 [2]: http://code.google.com/p/logkeys/
-[3]: http://opensource.org/licenses/ISC
-[Chi]: http://en.wikipedia.org/wiki/Chi's_Sweet_Home
+[3]: http://joeyh.name/code/moreutils/
+[4]: http://stackoverflow.com/questions/21564/is-there-a-unix-utility-to-prepend-timestamps-to-lines-of-text
+[5]: http://opensource.org/licenses/ISC
