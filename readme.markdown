@@ -50,9 +50,9 @@ Then just type as you would usually. Interrupt signal (`C-c`) to end.
 
 ## Related programs
 
-If you like spying on people (ethically, of course), [`xspy`][1] or
-[`logkeys`][2] might be better for you. They use the modifier keys to infer
-what was actually typed, so it's easier to read what's happening.
+If you want to see what characters the user actually typed, [`xspy`][1] or
+[`logkeys`][2] might be better for you. They support keymaps and have logic for
+resolving keys pressed together with modifier keys into the actual typed text.
 
 If you want to add timestamps to each line for logging purposes, I recommend
 piping to the [moreutils package][3]'s `ts`.  [These answers][4] feature
