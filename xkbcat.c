@@ -1,48 +1,34 @@
 // xkbcat: Logs X11 keypresses, globally.
 
 #include <X11/XKBlib.h>
+#include <X11/extensions/XInput2.h>
 
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <time.h>
 
 const char * DEFAULT_DISPLAY    = ":0";
-const int    DEFAULT_DELAY      = 10000000;
 const bool   DEFAULT_PRINT_UP   = false;
-
-typedef char KbBuffer[32];
-
-static inline bool keyState(KbBuffer b, int key) {
-     // Fetch the `key`-th bit from the buffer.
-    return b[key/8] & (1<<(key%8));
-    // This is because XQueryKeymap just writes a bit per key into the buffer.
-    // Assuming 8-bit chars here, of course.
-}
 
 int printUsage() {
     printf("\
-USAGE: xkbcat [-display <display>] [-delay <nanosec>] [-up]\n\
+USAGE: xkbcat [-display <display>] [-up]\n\
     display  target X display                   (default %s)\n\
-    delay    polling frequency; nanoseconds     (default %d)\n\
     up       also print key-ups                 (default %s)\n",
-        DEFAULT_DISPLAY, DEFAULT_DELAY,
-        (DEFAULT_PRINT_UP   ? "yes" : "no") );
+        DEFAULT_DISPLAY, (DEFAULT_PRINT_UP ? "yes" : "no") );
     exit(0);
 }
 
 int main(int argc, char * argv[]) {
 
     const char * hostname    = DEFAULT_DISPLAY;
-    int          delay       = DEFAULT_DELAY;
     bool         printKeyUps = DEFAULT_PRINT_UP;
 
     // Get arguments
     for (int i = 1; i < argc; i++) {
         if      (!strcmp(argv[i], "-help"))     printUsage();
         else if (!strcmp(argv[i], "-display"))  hostname    = argv[++i];
-        else if (!strcmp(argv[i], "-delay"))    delay       = atoi(argv[++i]);
         else if (!strcmp(argv[i], "-up"))       printKeyUps = true;
         else { printf("Unexpected argument `%s`\n", argv[i]); printUsage(); }
     }
@@ -53,46 +39,56 @@ int main(int argc, char * argv[]) {
         fprintf(stderr, "Cannot open X display: %s\n", hostname);
         exit(1);
     }
-    XSynchronize(disp, true);
 
-    // Set up buffers
-    KbBuffer keyBuffer1, keyBuffer2;
-    KbBuffer * oldKeys = &keyBuffer1,
-             * keys    = &keyBuffer2;
-    XQueryKeymap(disp, *oldKeys); // Initial fetch
+    // Test for XInput 2 extension
+    int xi_opcode;
+    int queryEvent, queryError;
+    if (! XQueryExtension(disp, "XInputExtension", &xi_opcode,
+                &queryEvent, &queryError)) {
+        // XXX Test version >=2
+        fprintf(stderr, "X Input extension not available\n"); return 1;
+    }
 
-    // Timespec for time to sleep for
-    struct timespec sleepTime = { .tv_nsec = delay };
+    // Register events
+    Window root = DefaultRootWindow(disp);
+    XIEventMask m;
+    m.deviceid = XIAllMasterDevices;
+    m.mask_len = XIMaskLen(XI_LASTEVENT);
+    m.mask = calloc(m.mask_len, sizeof(char));
+    XISetMask(m.mask, XI_RawKeyPress);
+    XISetMask(m.mask, XI_RawKeyRelease);
+    XISelectEvents(disp, root, &m, 1);
+    XSync(disp, false);
+    free(m.mask);
 
     while (1) { // Forever
-        XQueryKeymap(disp, *keys); // Fetch changed keys
+        XEvent event;
+        XGenericEventCookie *cookie = (XGenericEventCookie*)&event.xcookie;
+        XNextEvent(disp, &event);
 
-        for (int keyCode = 0; keyCode < sizeof(KbBuffer) * 8; keyCode++) {
-            bool stateBefore = keyState(*oldKeys, keyCode),
-                 stateNow    = keyState(*keys, keyCode);
-            if ( stateNow != stateBefore          // Changed?
-                 && (stateNow || printKeyUps) ) { // Should print?
+        if (XGetEventData(disp, cookie) &&
+                cookie->type == GenericEvent &&
+                cookie->extension == xi_opcode)
+        {
+            switch (cookie->evtype)
+            {
+                case XI_RawKeyRelease: if (!printKeyUps) continue;
+                case XI_RawKeyPress: {
+                    XIRawEvent *ev = cookie->data;
 
-                // Ask X what it calls that key
-                KeySym s = XkbKeycodeToKeysym(disp, keyCode, 0, 0);
-                if (NoSymbol == s) continue;
-                char * str = XKeysymToString(s);
-                if (NULL == str)   continue;
+                    // Ask X what it calls that key
+                    KeySym s = XkbKeycodeToKeysym(disp, ev->detail, 0, 0);
+                    if (NoSymbol == s) continue;
+                    char *str = XKeysymToString(s);
+                    if (NULL == str) continue;
 
-                if (printKeyUps) printf("%s ", (stateNow ? "+" : "-"));
-                printf("%s\n", str);
+
+                    if (printKeyUps) printf("%s", cookie->evtype == XI_RawKeyPress ? "+" : "-");
+                    printf("%s\n", str);
+                    break;
+                                     }
             }
         }
-        // Make sure the data is sent right away if it's being written to a
-        // pipe.
         fflush(stdout);
-
-        { // Swap buffers
-            KbBuffer * temp = oldKeys;
-            oldKeys = keys;
-            keys = temp;
-        }
-
-        nanosleep(&sleepTime, NULL);
     }
 }

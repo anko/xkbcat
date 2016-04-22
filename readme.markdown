@@ -41,7 +41,6 @@ Don't have `clang`? Edit the `makefile` to use `gcc`.
 Flags you can pass (all optional):
 
  - `-display <display>`: set target X display (default `:0`)
- - `-delay <nanosec>`: delay between polls to the keyboard (default `10000000`;
    that's 100ms)
  - `-up`: also prepend key-ups (default: don't)
  - `-help`: print usage hints and exit
