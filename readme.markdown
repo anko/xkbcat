@@ -49,26 +49,31 @@ Then just type as you would usually. Interrupt signal (`C-c`) to end.
 
 ## Related programs
 
-If you want to see what characters the user actually typed, [`xspy`][1] or
-[`logkeys`][2] might be better for you. They support keymaps and have logic for
+If you need to log keys across a whole Linux system (also in the
+framebuffer—not just in X11), try [keysniffer][1].  It works via a kernel
+module, and needs `sudo`.
+
+If you want to see what characters the user actually typed, [`xspy`][2] or
+[`logkeys`][3] might be better for you. They support keymaps and have logic for
 resolving keys pressed together with modifier keys into the actual typed text.
 
 If you want to add timestamps to each line for logging purposes, I recommend
-piping to the [moreutils package][3]'s `ts`.  [These answers][4] feature
+piping to the [moreutils package][4]'s `ts`.  [These answers][5] feature
 various other tools good for the purpose.
 
 ## Versioning
 
-The git-tagged version numbers follow [semver][5].
+The git-tagged version numbers follow [semver][6].
 
 ## License
 
-[ISC][6].
+[ISC][7].
 
 
-[1]: http://www.freshports.org/security/xspy/
-[2]: http://code.google.com/p/logkeys/
-[3]: http://joeyh.name/code/moreutils/
-[4]: http://stackoverflow.com/questions/21564/is-there-a-unix-utility-to-prepend-timestamps-to-lines-of-text
-[5]: http://semver.org/
-[6]: http://opensource.org/licenses/ISC
+[1]: https://github.com/jarun/keysniffer
+[2]: http://www.freshports.org/security/xspy/
+[3]: http://code.google.com/p/logkeys/
+[4]: http://joeyh.name/code/moreutils/
+[5]: http://stackoverflow.com/questions/21564/is-there-a-unix-utility-to-prepend-timestamps-to-lines-of-text
+[6]: http://semver.org/
+[7]: http://opensource.org/licenses/ISC
