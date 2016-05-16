@@ -53,9 +53,9 @@ If you need to log keys across a whole Linux system (also in the
 framebuffer—not just in X11), try [keysniffer][1].  It works via a kernel
 module, and needs `sudo`.
 
-If you want to see what characters the user actually typed, [`xspy`][2] or
-[`logkeys`][3] might be better for you. They support keymaps and have logic for
-resolving keys pressed together with modifier keys into the actual typed text.
+If you want to see what characters the user actually typed (with modifier keys,
+backspace, etc resolved into text), [`xspy`][2] or [`logkeys`][3] might be
+better for you.
 
 If you want to add timestamps to each line for logging purposes, I recommend
 piping to the [moreutils package][4]'s `ts`.  [These answers][5] feature
