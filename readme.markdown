@@ -1,6 +1,6 @@
 # xkbcat
 
-X11 keylogger with a simple output format: One key event per line on `stdout`.
+X11 keylogger with simple output format: one line on `stdout` per key event.
 
 Great as a data source for keyboard heatmaps, layout comparisons or
 screencasting applications.
@@ -25,7 +25,7 @@ With key-ups enabled (`xkbcat -up`), the format changes to show them:
     + i
     - i
 
-Lines starting `+` are key-downs; `-` are key-ups. 
+Lines starting `+` are key-downs; `-` are key-ups.
 
 Left- and right-positioned modifier keys are recognised separately. The F-keys
 work too, as do most media keys like `XF86AudioLowerVolume`.
@@ -44,7 +44,6 @@ package.
 Flags you can pass (all optional):
 
  - `-display <display>`: set target X display (default `:0`)
-   that's 100ms)
  - `-up`: also prepend key-ups (default: don't)
  - `-help`: print usage hints and exit
 
