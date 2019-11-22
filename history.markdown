@@ -15,4 +15,4 @@ statistics, deprioritising human parseability of the output.
 
 [1]: http://www6.frugalware.org/mirrors/linux/kali/kali/pool/main/x/xspy/
 [2]: https://github.com/BlackArch/blackarch/blob/master/packages/xspy/PKGBUILD
-[3]: http://www.freshports.org/security/xspy/)
+[3]: http://www.freshports.org/security/xspy/
