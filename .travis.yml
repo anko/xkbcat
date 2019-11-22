@@ -1,0 +1,10 @@
+dist: bionic
+language: c
+script:
+    - make
+addons:
+    apt:
+        update: true
+        packages:
+            - libx11-dev
+            - libxi-dev
