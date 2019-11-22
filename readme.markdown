@@ -1,4 +1,4 @@
-# xkbcat
+# xkbcat [![](https://img.shields.io/travis/anko/xkbcat.svg?style=flat-square)](https://travis-ci.org/anko/xkbcat)
 
 X11 keylogger with simple output format: one line on `stdout` per key event.
 
