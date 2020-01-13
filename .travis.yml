@@ -1,5 +1,7 @@
 dist: bionic
 language: c
+compiler:
+    - clang
 script:
     - make
 addons:
