@@ -34,8 +34,6 @@ work too, as do most media keys like `XF86AudioLowerVolume`.
 
 Just `make`.
 
-Don't have `clang`? Edit the `makefile` to use `gcc`.
-
 Don't have `X11/extensions/XInput2.h`?  Install your distro's `libxi-devel`
 package.
 
