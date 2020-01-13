@@ -1,13 +1,14 @@
-# xkbcat [![](https://img.shields.io/travis/anko/xkbcat.svg?style=flat-square)](https://travis-ci.org/anko/xkbcat)
+# xkbcat [![](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Funtitled-utavgi833noo.runkit.sh%2Fanko%2Fxkbcat)](https://travis-ci.org/anko/xkbcat)
 
-X11 keylogger with simple output format: one line on `stdout` per key event.
+Simple X11 keylogger.
 
-Great as a data source for keyboard heatmaps, layout comparisons or
-screencasting applications.
-
-<100 lines of modern C. Doesn't need `sudo`.
+ - Simple output format:  one line on `stdout` per key event.
+ - Simple to audit:  <100 lines of modern C.
+ - Simple to run:  Does not need `sudo`.
 
 ## Examples
+
+### Keypresses only
 
 Given no flags, `xkbcat` prints only keypresses, one per line. Here's the
 output when I type "Hi":
@@ -15,6 +16,8 @@ output when I type "Hi":
     Shift_L
     h
     i
+
+### Keypresses and key-ups
 
 With key-ups enabled (`xkbcat -up`), the format changes to show them:
 
@@ -26,9 +29,6 @@ With key-ups enabled (`xkbcat -up`), the format changes to show them:
     - i
 
 Lines starting `+` are key-downs; `-` are key-ups.
-
-Left- and right-positioned modifier keys are recognised separately. The F-keys
-work too, as do most media keys like `XF86AudioLowerVolume`.
 
 ## Compilation
 
@@ -45,21 +45,24 @@ Flags you can pass (all optional):
  - `-up`: also prepend key-ups (default: don't)
  - `-help`: print usage hints and exit
 
-Then just type as you would usually. Interrupt signal (`C-c`) to end.
+Then just use your computer as usual.  Interrupt signal (`C-c`) to quit.
 
 ## Related programs
 
-If you need to log keys across a whole Linux system (also in the
-framebuffer—not just in X11), try [keysniffer][1].  It works via a kernel
-module, and needs `sudo`.
+### Other keyloggers
 
-If you want to see what characters the user actually typed (with modifier keys,
-backspace, etc resolved into text), [`xspy`][2] or [`logkeys`][3] might be
-better for you.
+ - If you need to log keys across a whole Linux system (also in the
+   framebuffer—not just in X11), try [keysniffer][1].  It works via a kernel
+   module, and needs `sudo`.
+ - If you want to see what characters the user actually typed (with modifier
+   keys, backspace, etc resolved into text), [`xspy`][2] or [`logkeys`][3]
+   might be better for you.
 
-If you want to add timestamps to each line for logging purposes, I recommend
-piping to the [moreutils package][4]'s `ts`.  [These answers][5] feature
-various other tools good for the purpose.
+### Programs that work well together with `xkbcat`
+
+ - If you want to add timestamps to each line for logging purposes, I recommend
+   piping to the [moreutils package][4]'s `ts`.  [These answers][5] feature
+   various other tools good for the purpose.
 
 ## Versioning
 
