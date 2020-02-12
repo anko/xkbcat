@@ -64,13 +64,22 @@ Then just use your computer as usual.  Interrupt signal (`C-c`) to quit.
    piping to the [moreutils package][4]'s `ts`.  [These answers][5] feature
    various other tools good for the purpose.
 
+### Programs for logging other X11 events
+
+ - [xinput][6] invoked as `xinput --test-xi2 --root` logs everything; even
+   mouse movements and clicks, and touchpad stuff.  Its output is very
+   comprehensive, but harder to parse.
+
+ - If you need to log X11 events more generally, various protocol monitoring
+   programs are listed in the [X11 debugging guide][7].
+
 ## Versioning
 
-The git-tagged version numbers follow [semver][6].
+The git-tagged version numbers follow [semver][8].
 
 ## License
 
-[ISC][7].
+[ISC][9].
 
 
 [1]: https://github.com/jarun/keysniffer
@@ -78,5 +87,7 @@ The git-tagged version numbers follow [semver][6].
 [3]: http://code.google.com/p/logkeys/
 [4]: http://joeyh.name/code/moreutils/
 [5]: http://stackoverflow.com/questions/21564/is-there-a-unix-utility-to-prepend-timestamps-to-lines-of-text
-[6]: http://semver.org/
-[7]: http://opensource.org/licenses/ISC
+[6]: https://www.x.org/archive/current/doc/man/man1/xinput.1.xhtml
+[7]: https://www.x.org/wiki/guide/debugging/
+[8]: http://semver.org/
+[9]: http://opensource.org/licenses/ISC
