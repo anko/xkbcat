@@ -41,12 +41,22 @@ int main(int argc, char * argv[]) {
     }
 
     // Test for XInput 2 extension
-    int xiOpcode;
-    int queryEvent, queryError;
+    int xiOpcode, queryEvent, queryError;
     if (! XQueryExtension(disp, "XInputExtension", &xiOpcode,
                 &queryEvent, &queryError)) {
-        // XXX Test version >=2
-        fprintf(stderr, "X Input extension not available\n"); return 1;
+        fprintf(stderr, "X Input extension not available\n");
+        exit(2);
+    }
+    { // Request XInput 2.0, guarding against changes in future versions
+        int major = 2, minor = 0;
+        int queryResult = XIQueryVersion(disp, &major, &minor);
+        if (queryResult == BadRequest) {
+            fprintf(stderr, "Need XI 2.0 support (got %d.%d)\n", major, minor);
+            exit(3);
+        } else if (queryResult != Success) {
+            fprintf(stderr, "Internal error\n");
+            exit(4);
+        }
     }
 
     // Register events
