@@ -94,10 +94,10 @@ int main(int argc, char * argv[]) {
                     if (printKeyUps) printf("%s",
                             cookie->evtype == XI_RawKeyPress ? "+" : "-");
                     printf("%s\n", str);
+                    fflush(stdout);
                     break;
                                      }
             }
         }
-        fflush(stdout);
     }
 }
