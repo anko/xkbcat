@@ -71,17 +71,15 @@ int main(int argc, char * argv[]) {
     XSync(disp, false);
     free(m.mask);
 
-    while (1) { // Forever
+    while ("forever") {
         XEvent event;
         XGenericEventCookie *cookie = (XGenericEventCookie*)&event.xcookie;
         XNextEvent(disp, &event);
 
         if (XGetEventData(disp, cookie) &&
                 cookie->type == GenericEvent &&
-                cookie->extension == xiOpcode)
-        {
-            switch (cookie->evtype)
-            {
+                cookie->extension == xiOpcode) {
+            switch (cookie->evtype) {
                 case XI_RawKeyRelease: if (!printKeyUps) continue;
                 case XI_RawKeyPress: {
                     XIRawEvent *ev = cookie->data;
@@ -93,7 +91,8 @@ int main(int argc, char * argv[]) {
                     if (NULL == str) continue;
 
 
-                    if (printKeyUps) printf("%s", cookie->evtype == XI_RawKeyPress ? "+" : "-");
+                    if (printKeyUps) printf("%s",
+                            cookie->evtype == XI_RawKeyPress ? "+" : "-");
                     printf("%s\n", str);
                     break;
                                      }
