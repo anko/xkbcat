@@ -66,7 +66,7 @@ int main(int argc, char * argv[]) {
     m.mask_len = XIMaskLen(XI_LASTEVENT);
     m.mask = calloc(m.mask_len, sizeof(char));
     XISetMask(m.mask, XI_RawKeyPress);
-    XISetMask(m.mask, XI_RawKeyRelease);
+    if (printKeyUps) XISetMask(m.mask, XI_RawKeyRelease);
     XISelectEvents(disp, root, &m, 1);
     XSync(disp, false);
     free(m.mask);
@@ -80,7 +80,7 @@ int main(int argc, char * argv[]) {
                 cookie->type == GenericEvent &&
                 cookie->extension == xiOpcode) {
             switch (cookie->evtype) {
-                case XI_RawKeyRelease: if (!printKeyUps) continue;
+                case XI_RawKeyRelease:
                 case XI_RawKeyPress: {
                     XIRawEvent *ev = cookie->data;
 
