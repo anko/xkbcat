@@ -3,7 +3,7 @@
 Simple X11 keylogger.
 
  - Simple output format:  one line on `stdout` per key event.
- - Simple to audit:  <100 lines of modern C.
+ - Simple to audit:  Short single file of modern C.
  - Simple to run:  Does not need `sudo`.
 
 ## Examples
