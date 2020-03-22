@@ -41,9 +41,9 @@ int main(int argc, char * argv[]) {
     }
 
     // Test for XInput 2 extension
-    int xi_opcode;
+    int xiOpcode;
     int queryEvent, queryError;
-    if (! XQueryExtension(disp, "XInputExtension", &xi_opcode,
+    if (! XQueryExtension(disp, "XInputExtension", &xiOpcode,
                 &queryEvent, &queryError)) {
         // XXX Test version >=2
         fprintf(stderr, "X Input extension not available\n"); return 1;
@@ -68,7 +68,7 @@ int main(int argc, char * argv[]) {
 
         if (XGetEventData(disp, cookie) &&
                 cookie->type == GenericEvent &&
-                cookie->extension == xi_opcode)
+                cookie->extension == xiOpcode)
         {
             switch (cookie->evtype)
             {
