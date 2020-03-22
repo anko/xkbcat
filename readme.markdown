@@ -21,12 +21,12 @@ output when I type "Hi":
 
 With key-ups enabled (`xkbcat -up`), the format changes to show them:
 
-    + Shift_L
-    + h
-    - h
-    - Shift_L
-    + i
-    - i
+    +Shift_L
+    +h
+    -h
+    -Shift_L
+    +i
+    -i
 
 Lines starting `+` are key-downs; `-` are key-ups.
 
