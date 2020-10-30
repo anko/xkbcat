@@ -63,6 +63,9 @@ Then just use your computer as usual.  Interrupt signal (`C-c`) to quit.
  - If you want to add timestamps to each line for logging purposes, I recommend
    piping to the [moreutils package][4]'s `ts`.  [These answers][5] feature
    various other tools good for the purpose.
+ - If you only want to see key names when you press keys in the same terminal
+   where `xkbcat` is running, you can temporarily disable terminal echo with
+   `stty -echo && xkbcat`.  (`stty` is in coreutils.)
 
 ### Programs for logging other X11 events
 
