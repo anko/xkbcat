@@ -1,7 +1,8 @@
-dist: bionic
+dist: focal
 language: c
 compiler:
     - clang
+    - gcc
 script:
     - make
 addons:
