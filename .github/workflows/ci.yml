@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  # Trigger on push and pull-request events, on any branch
+  push:
+  pull_request:
+
+  # Can be run manually from the Actions tab
+  workflow_dispatch:
+
+  # Automatically rerun at 13:00 on the 10th day of each month
+  schedule:
+      - cron: '00 13 10 * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+        compiler: [gcc, clang]
+    steps:
+      - uses: actions/checkout@v2
+      - name: install dependencies
+        run: sudo apt-get install libx11-dev libxi-dev
+      - name: make
+        run: CC=${{ matrix.compiler }} make
