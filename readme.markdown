@@ -80,6 +80,10 @@ Then just use your computer as usual.  Interrupt signal (`C-c`) to quit.
 
 The git-tagged version numbers follow [semver][8].
 
+Error outputs (on stderr) are intended to be read by people.  Changes to their
+wording are not considered breaking changes.  Don't parse them
+programmatically.
+
 ## License
 
 [ISC][9].
