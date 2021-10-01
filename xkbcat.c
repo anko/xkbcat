@@ -28,8 +28,17 @@ int main(int argc, char * argv[]) {
     // Get arguments
     for (int i = 1; i < argc; i++) {
         if      (!strcmp(argv[i], "-help"))     printUsage();
-        else if (!strcmp(argv[i], "-display"))  xDisplayName = argv[++i];
         else if (!strcmp(argv[i], "-up"))       printKeyUps = true;
+        else if (!strcmp(argv[i], "-display")) {
+            // Read next entry to find value
+            ++i;
+            if (i >= argc) {
+                fprintf(stderr, "No value given to option `-display`\n");
+                printUsage();
+                exit(5);
+            }
+            xDisplayName = argv[i];
+        }
         else { printf("Unexpected argument `%s`\n", argv[i]); printUsage(); }
     }
 
