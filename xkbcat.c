@@ -36,7 +36,7 @@ int main(int argc, char * argv[]) {
     // Connect to X display
     Display * disp = XOpenDisplay(xDisplayName);
     if (NULL == disp) {
-        fprintf(stderr, "Cannot open X display: %s\n", xDisplayName);
+        fprintf(stderr, "Cannot open X display '%s'\n", xDisplayName);
         exit(1);
     }
 
