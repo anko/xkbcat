@@ -2,15 +2,15 @@
 
 Simple X11 keylogger.
 
- - Simple output format:  one line on `stdout` per key event.
- - Simple to audit:  Short single file of modern C.
+ - Simple output format:  One line on `stdout` per key event.
+ - Simple to audit:  One short file of modern C.
  - Simple to run:  Does not need `sudo`.
 
 ## Examples
 
 ### Keypresses only
 
-Given no flags, `xkbcat` prints only keypresses, one per line. Here's the
+Given no options, `xkbcat` prints only keypresses, one per line. Here's the
 output when I type "Hi":
 
     Shift_L
@@ -39,7 +39,7 @@ package.
 
 ## Usage
 
-Flags you can pass (all optional):
+Options you can pass (all optional):
 
  - `-display <display>`: set target X display (default `:0`)
  - `-up`: also prepend key-ups (default: don't)
@@ -69,9 +69,9 @@ Then just use your computer as usual.  Interrupt signal (`C-c`) to quit.
 
 ### Programs for logging other X11 events
 
- - [xinput][6] invoked as `xinput --test-xi2 --root` logs everything; even
-   mouse movements and clicks, and touchpad stuff.  Its output is very
-   comprehensive, but harder to parse.
+ - [xinput][6] invoked as `xinput --test-xi2 --root` logs everything
+   input-related; even mouse movements and clicks, and touchpad stuff.  Its
+   output is very comprehensive, but harder to parse.
 
  - If you need to log X11 events more generally, various protocol monitoring
    programs are listed in the [X11 debugging guide][7].
