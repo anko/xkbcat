@@ -75,6 +75,8 @@ int main(int argc, char * argv[]) {
         m.deviceid = XIAllMasterDevices;
         m.mask_len = XIMaskLen(XI_LASTEVENT);
         m.mask = calloc(m.mask_len, sizeof(char));
+        // Raw key presses correspond to physical key-presses, without
+        // processing steps such as auto-repeat.
         XISetMask(m.mask, XI_RawKeyPress);
         if (printKeyUps) XISetMask(m.mask, XI_RawKeyRelease);
         XISelectEvents(disp, root, &m, 1 /*number of masks*/);
@@ -82,22 +84,47 @@ int main(int argc, char * argv[]) {
         free(m.mask);
     }
 
+    int xkbOpcode, xkbEventCode;
+    { // Test for Xkb extension
+        int queryError, majorVersion, minorVersion;
+        if (! XkbQueryExtension(disp, &xkbOpcode, &xkbEventCode, &queryError,
+                    &majorVersion, &minorVersion)) {
+            fprintf(stderr, "Xkb extension not available\n");
+            exit(2);
+        }
+    }
+    // Register to receive events when the keyboard's keysym group changes.
+    // Keysym groups are normally used to switch keyboard layouts.  The
+    // keyboard continues to send the same keycodes (numeric identifiers of
+    // keys) either way, but the active keysym group determines how those map
+    // to keysyms (textual names of keys).
+    XkbSelectEventDetails(disp, XkbUseCoreKbd, XkbStateNotify,
+            XkbGroupStateMask, XkbGroupStateMask);
+    int group;
+    { // Determine initial keysym group
+        XkbStateRec state;
+        XkbGetState(disp, XkbUseCoreKbd, &state);
+        group = state.group;
+    }
+
     while ("forever") {
         XEvent event;
         XGenericEventCookie *cookie = (XGenericEventCookie*)&event.xcookie;
         XNextEvent(disp, &event);
 
-        if (XGetEventData(disp, cookie) &&
-                cookie->type == GenericEvent &&
-                cookie->extension == xiOpcode) {
-            switch (cookie->evtype) {
-                case XI_RawKeyRelease:
-                case XI_RawKeyPress: {
+        if (XGetEventData(disp, cookie)) {
+            // Handle key press and release events
+            if (cookie->type == GenericEvent
+                    && cookie->extension == xiOpcode) {
+                if (cookie->evtype == XI_RawKeyRelease
+                        || cookie->evtype == XI_RawKeyPress) {
                     XIRawEvent *ev = cookie->data;
 
-                    // Ask X what it calls that key; skip if it doesn't know
-                    KeySym s = XkbKeycodeToKeysym(disp, ev->detail,
-                            0 /*group*/, 0 /*shift level*/);
+                    // Ask X what it calls that key; skip if unknown.
+                    // Ignore shift-level argument, to show the "basic" key
+                    // regardless of what modifiers are held down.
+                    KeySym s = XkbKeycodeToKeysym(
+                            disp, ev->detail, group, 0 /*shift level*/);
                     if (NoSymbol == s) continue;
                     char *str = XKeysymToString(s);
                     if (NULL == str) continue;
@@ -107,8 +134,17 @@ int main(int argc, char * argv[]) {
                             cookie->evtype == XI_RawKeyPress ? "+" : "-");
                     printf("%s\n", str);
                     fflush(stdout);
-                    break;
-                                     }
+                }
+            }
+            // Release memory associated with event data
+            XFreeEventData(disp, cookie);
+        } else { // No extra data to release; `event` contains everything.
+            // Handle keysym group change events
+            if (event.type == xkbEventCode) {
+                XkbEvent *xkbEvent = (XkbEvent*)&event;
+                if (xkbEvent->any.xkb_type == XkbStateNotify) {
+                    group = xkbEvent->state.group;
+                }
             }
         }
     }
