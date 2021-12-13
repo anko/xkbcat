@@ -125,7 +125,20 @@ int main(int argc, char * argv[]) {
                     // regardless of what modifiers are held down.
                     KeySym s = XkbKeycodeToKeysym(
                             disp, ev->detail, group, 0 /*shift level*/);
-                    if (NoSymbol == s) continue;
+
+                    // Non-zero keysym groups are "overlays" on the base (`0`)
+                    // group.  If the current group has no keysym for this
+                    // keycode, defer to the base group instead.  (This usually
+                    // happens with common shared keys like Return, Backspace,
+                    // or numeric keypad keys.)
+                    if (NoSymbol == s) {
+                        if (group == 0) continue;
+                        else {
+                            s = XkbKeycodeToKeysym(disp, ev->detail,
+                                    0 /* base group */, 0 /*shift level*/);
+                            if (NoSymbol == s) continue;
+                        }
+                    }
                     char *str = XKeysymToString(s);
                     if (NULL == str) continue;
 
