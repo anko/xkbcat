@@ -1,4 +1,4 @@
-# xkbcat [![](https://img.shields.io/github/workflow/status/anko/xkbcat/CI/master?style=flat-square)](https://github.com/anko/xkbcat/actions) ![](https://img.shields.io/github/languages/code-size/anko/xkbcat?style=flat-square)
+# xkbcat [![](https://img.shields.io/github/actions/workflow/status/anko/xkbcat/ci.yml?branch=master&style=flat-square)](https://github.com/anko/xkbcat/actions) ![](https://img.shields.io/github/languages/code-size/anko/xkbcat?style=flat-square)
 
 Simple X11 keylogger.
 
