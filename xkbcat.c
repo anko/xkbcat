@@ -3,26 +3,42 @@
 #include <X11/XKBlib.h>
 #include <X11/extensions/XInput2.h>
 
+#include <errno.h>
+#include <fcntl.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
+const unsigned int BUFFER_SIZE  = 8;
 const char * DEFAULT_DISPLAY    = ":0";
+const char * DEFAULT_LOGFILE    = "xkbcat-hostname-timestamp.log";
 const bool   DEFAULT_PRINT_UP   = false;
 
 int printUsage() {
     printf("\
 USAGE: xkbcat [-display <display>] [-up]\n\
     display  target X display                   (default %s)\n\
-    up       also print key-ups                 (default %s)\n",
-        DEFAULT_DISPLAY, (DEFAULT_PRINT_UP ? "yes" : "no") );
+    up       also print key-ups                 (default %s)\n\
+    logfile  logfile path                       (default %s)\n",
+        DEFAULT_DISPLAY, (DEFAULT_PRINT_UP ? "yes" : "no"),
+        DEFAULT_LOGFILE );
     exit(0);
 }
 
 int main(int argc, char * argv[]) {
 
     const char * xDisplayName = DEFAULT_DISPLAY;
+    const char * logfilePath  = DEFAULT_LOGFILE;
+    //const char logfilePath[PATH_MAX]  = DEFAULT_LOGFILE;
+    FILE      * logfileStream = NULL;
+    char        buffer[BUFFER_SIZE];
+    int         fd;
+    memset(buffer, 0x0, BUFFER_SIZE);
+    bzero(&buffer, 0x0, BUFFER_SIZE);
+
     bool         printKeyUps  = DEFAULT_PRINT_UP;
 
     // Get arguments
@@ -38,6 +54,16 @@ int main(int argc, char * argv[]) {
                 exit(5);
             }
             xDisplayName = argv[i];
+        }
+        else if (!strcmp(argv[i], "-logfile")) {
+            // Read next entry to find value
+            ++i;
+            if (i >= argc) {
+                fprintf(stderr, "No value given to option `-logfile`\n");
+                printUsage();
+                exit(6);
+            }
+            logfilePath = argv[i];
         }
         else { printf("Unexpected argument `%s`\n", argv[i]); printUsage(); }
     }
@@ -107,6 +133,18 @@ int main(int argc, char * argv[]) {
         group = state.group;
     }
 
+    //if ( (fd = open(logfilePath,O_CREAT|O_EXCL|O_SYNC)) == -1){
+    //    fprintf(stderr, "Cannot open logfile %s\n", logfilePath);
+    //    perror("logfile");
+    //}
+    //fsync(fd);
+    //close(fd);
+
+    if ( (logfileStream = fopen (logfilePath, "ax")) == NULL){
+        fprintf(stderr, "Cannot open logfile %s\n", logfilePath);
+    }
+    // fclose(logfileStream);
+
     while ("forever") {
         XEvent event;
         XGenericEventCookie *cookie = (XGenericEventCookie*)&event.xcookie;
@@ -147,10 +185,18 @@ int main(int argc, char * argv[]) {
                             cookie->evtype == XI_RawKeyPress ? "+" : "-");
                     printf("%s\n", str);
                     fflush(stdout);
+                    // TODO: construct proper logline with timestampo
+                    // sprintf(buffer, "%s\n", str);
+                    // write(fd, str, sizeof(str));
+                    if (printKeyUps) fprintf(logfileStream, "%s",
+                            cookie->evtype == XI_RawKeyPress ? "+" : "-");
+                    fprintf(logfileStream, "%s\n", str);
+                    fflush(logfileStream);
                 }
             }
             // Release memory associated with event data
             XFreeEventData(disp, cookie);
+            // fclose(logfileStream);
         } else { // No extra data to release; `event` contains everything.
             // Handle keysym group change events
             if (event.type == xkbEventCode) {
