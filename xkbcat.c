@@ -133,15 +133,9 @@ int main(int argc, char * argv[]) {
         group = state.group;
     }
 
-    //if ( (fd = open(logfilePath,O_CREAT|O_EXCL|O_SYNC)) == -1){
-    //    fprintf(stderr, "Cannot open logfile %s\n", logfilePath);
-    //    perror("logfile");
-    //}
-    //fsync(fd);
-    //close(fd);
-
     if ( (logfileStream = fopen (logfilePath, "ax")) == NULL){
-        fprintf(stderr, "Cannot open logfile %s\n", logfilePath);
+        fprintf(stderr, "Cannot open logfile '%s'\n", logfilePath);
+        exit(7);
     }
     // fclose(logfileStream);
 
@@ -183,14 +177,15 @@ int main(int argc, char * argv[]) {
                     // Output line
                     if (printKeyUps) printf("%s",
                             cookie->evtype == XI_RawKeyPress ? "+" : "-");
-                    printf("%s\n", str);
+                    printf("%s", str);
+                    if (strcmp(str,"Enter") == 0) printf("<Enter>\n");
                     fflush(stdout);
                     // TODO: construct proper logline with timestampo
                     // sprintf(buffer, "%s\n", str);
-                    // write(fd, str, sizeof(str));
                     if (printKeyUps) fprintf(logfileStream, "%s",
                             cookie->evtype == XI_RawKeyPress ? "+" : "-");
-                    fprintf(logfileStream, "%s\n", str);
+                    if (strcmp(str,"Enter") == 0) fprintf(logfileStream, "<Enter>\n");
+                    fprintf(logfileStream, "%s", str);
                     fflush(logfileStream);
                 }
             }
