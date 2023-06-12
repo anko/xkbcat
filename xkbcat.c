@@ -186,6 +186,7 @@ int main(int argc, char * argv[]) {
     }
 
     fprintf(stdout, "Log file created: %s\n", logfilePath);
+    fprintf(stdout, "Capturing keystrokes on display: %s\n", xDisplayName);
     // fprintf(logfileStream, "[%s] %s\n", asctime(timeinfo), logline);
 
     while ("forever") {
